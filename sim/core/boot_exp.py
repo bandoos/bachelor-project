@@ -1,3 +1,10 @@
+"""
+experiment bootstrap module
+===========================
+
+defines the experiment function `boot_exp`
+and the stats aggregator `EpisodeStats`.
+"""
 import numpy as np
 import math
 import sys
@@ -5,20 +12,16 @@ import sys
 from time import time
 from functools import *
 
-from sim.core.sim_0 import Simulation
+#from sim.core.sim_0 import Simulation
 from sim.core.decorators import *
 
 from sim.core.stake_f import stake_f_label_to_fn
-from sim.core.sim_0 import Simulation
+#from sim.core.sim_0 import Simulation
 
 from sim.core.implem import \
     ConstSim, LogConstSim, \
     GeomSim,  LogGeomSim, \
     RandomSim
-
-# from sim.core.random_sim import RandomSim
-# from sim.core.logcont_sim import LogConstSim
-# from sim.core.geom_sim import GeomSim, LogGeomSim
 
 sim_label_to_class ={
     'random':  RandomSim,
@@ -108,10 +111,11 @@ def fill_in_fns (ps):
 
 @unverbosed
 def boot_exp(params,out_fn=sys.stdout.write):
-    """Bootstrap experiment, builds a simulation forawrding kwargs
-    in params to the Simulation constructor,
-    The simulation is repeated `times` times, and
-    dumps stats produced by `EpisodeStats` via `out_fn`.
+    """Bootstrap experiment, builds a simulation forawrding kwargs in
+    params to the appropriate Simulation extension constructor.
+
+    The simulation is repeated `times` times, and dumps stats produced
+    by `EpisodeStats` via `out_fn`.
 
     """
 

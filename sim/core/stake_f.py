@@ -1,3 +1,15 @@
+"""
+Inital stakes generation module
+===============================
+
+defines `stake_f_map` and its inverse
+`stake_f_label_to_fn` with the implementation and labels
+for the initial stake distribution generator functions
+
+These should be used in combination with
+`sim.core.sim_0.make_nodes_norm` to generate
+a population of `sim.core.node.Node` instances
+"""
 import scipy.stats as st
 from matplotlib import pyplot as plt
 # import decorator

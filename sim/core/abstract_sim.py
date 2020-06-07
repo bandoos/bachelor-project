@@ -1,3 +1,11 @@
+"""
+AbstractSimulation module
+=========================
+
+Defines the abstract base class for simulation classes
+
+"""
+
 from sim.core.base_object import *
 from sim.core.plot import *
 from sim.core.decorators import *
@@ -5,10 +13,17 @@ import abc
 
 class AbstractSimulation(BaseObject):
     """Encapsulates aspects shared by all concrete simulations.
-    Including a default logging function, self.T (max epochs)
-    self.t (initial/current epoch) = 0, self.s (current total stake),
-    self.nodes (container for simulation agents),
-    blacklisting nodes for params(), some basic plotting for the nodes
+
+    Including:
+
+    - default logging function
+    - self.T (max epochs)
+    - self.t (initial/current epoch) = 0
+    - self.s (current total stake),
+    - self.nodes (container for simulation agents),
+    - blacklisting nodes for params()
+    - some basic plotting for the nodes
+
     """
     id_prefix = "sim-"
     blackList = ["nodes","w_history","s_history","r_history"]
@@ -34,6 +49,7 @@ class AbstractSimulation(BaseObject):
         """Invokes ste step method for all nodes in self.nodes """
         for node in self.nodes:
             node.step(tot=self.s)
+
 
     @abc.abstractmethod
     def select_proposer(self):

@@ -1,4 +1,12 @@
-# sim_0
+"""
+Default concrete simulaion
+=================================
+
+Defines the basic concrete class for simulation extensions
+
+Extensions are defined in sim.core.implem.py module
+
+"""
 from random import choices
 
 from sim.core.decorators import *
@@ -113,11 +121,6 @@ def with_reward_fn(fn):
     the given reward fucntion
 
     Usage: use as decorator passing the desired reward function
-    ```@with_reward_fn(fun)
-       class SomeClass(Simulation):
-           ...
-           pass```
-
     """
 
     def d(c):
@@ -125,6 +128,12 @@ def with_reward_fn(fn):
         return c
     return d
 
+'''
+@with_reward_fn(fun)
+class SomeClass(Simulation):
+    pass
+
+'''
 
 def with_selection_fn(fn):
     """Same as for with_reward_fn but for the selection

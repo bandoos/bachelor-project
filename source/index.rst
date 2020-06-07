@@ -19,19 +19,33 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+.. automodule:: sim.core.utils
+    :members:
+
 .. automodule:: sim.core.base_object
     :members:
 
 .. automodule:: sim.core.abstract_sim
     :members:
 
+.. automodule:: sim.core.decorators
+    :members:
+
+.. automodule:: sim.core.sim_0
+    :members:
+
 .. automodule:: sim.core.node
     :members:
 
-.. automodule:: sim.core.boot_exp
+.. automodule:: sim.core.implem
     :members:
 
-.. automodule:: sim.core.batch
+.. automodule:: sim.core.stake_f
+    :members:
+
+
+
+.. automodule:: sim.core.boot_exp
     :members:
 
 .. automodule:: sim.core.main

@@ -1,4 +1,6 @@
-"""Simulation implementation module.
+"""
+Simulation implementation module.
+=================================
 
 Contains the definitions of the different concrete implementations
 of the Simulation base class.

@@ -1,3 +1,10 @@
+"""
+Batch results formatting module
+===============================
+
+
+
+"""
 import sys
 import numpy as np
 #from pprint import pprint
@@ -23,25 +30,25 @@ parsed_args = { 'm':10,
 
 
 
-# Expand the results to produce a csv
-def long_form_results (results):
-    """
-    Produce a csv string from the innput dictionary
-    """
-    indep_keys = ["m","T","c","R","sim","stake_f"] # remove exp_v_T as can be derived
-    response_keys = ["mu_h",
-                     "var_0_h","var_h",
-                     "gini_0_h","gini_h",
-                     "under_target_h","avg_loss_h",
-                     "over_target_h","avg_gain_h"]
+# # Expand the results to produce a csv
+# def long_form_results (results):
+#     """
+#     Produce a csv string from the innput dictionary
+#     """
+#     indep_keys = ["m","T","c","R","sim","stake_f"] # remove exp_v_T as can be derived
+#     response_keys = ["mu_h",
+#                      "var_0_h","var_h",
+#                      "gini_0_h","gini_h",
+#                      "under_target_h","avg_loss_h",
+#                      "over_target_h","avg_gain_h"]
 
-    s = ",".join ([*indep_keys,*response_keys]) + "\n"
-    prefix = ",".join ([str (results [k]) for k in indep_keys]) + ","
-    for time in range (results ['times']):
-        s += prefix + ",".join ([str (np.round (results [k] [time],8))
-                                  for k in response_keys]) + "\n"
+#     s = ",".join ([*indep_keys,*response_keys]) + "\n"
+#     prefix = ",".join ([str (results [k]) for k in indep_keys]) + ","
+#     for time in range (results ['times']):
+#         s += prefix + ",".join ([str (np.round (results [k] [time],8))
+#                                   for k in response_keys]) + "\n"
 
-    return s
+#     return s
 
 
 

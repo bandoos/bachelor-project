@@ -1,5 +1,11 @@
 # decorators.py
-# utilities for verbosity and brevity
+"""
+decorators
+==========
+
+utilities for verbosity and brevity
+
+"""
 
 from pprint import pprint
 

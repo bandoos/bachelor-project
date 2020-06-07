@@ -1,5 +1,9 @@
 # base_object.py
-# abstract class for simulation objects
+"""
+Abstract class for simulation objects
+=====================================
+
+"""
 from IPython.display import Math, Latex, display
 import abc
 
