@@ -1,6 +1,8 @@
 # base_object.py
 # abstract class for simulation objects
 from IPython.display import Math, Latex, display
+import abc
+
 
 from sim.core.decorators import *
 
@@ -31,6 +33,7 @@ class BaseObject():
         self.id = type(self).next_id(self)
 
     def dict(self,**kwargs):
+        """ Return self.__dict__ """
         return self.__dict__
 
     def params(self,**kwargs):
@@ -39,6 +42,7 @@ class BaseObject():
                 in self.dict(**kwargs).items()
                 if k not in self.blackList}
 
+    @abc.abstractmethod
     def log(self,*args,**kwargs):
         raise Exception("log is not implemented for class: {}".format(type(self)))
 

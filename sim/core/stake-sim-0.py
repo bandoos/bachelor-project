@@ -17,7 +17,7 @@ from IPython.display import Math, Latex, display
 
 plt.style.use("seaborn-dark")
 
-from widgets import *
+#from widgets import *
 
 # local imports
 from sim.core.plot import *
@@ -146,6 +146,6 @@ def demo_step(m,T,R):
     sim.run()
     return sim
 sim = demo_step(m,T,R)
-sim.plot_nodes_v()
+#sim.plot_nodes_v()
 
 sim.plot_nodes_dist()

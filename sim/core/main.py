@@ -1,6 +1,8 @@
+#!/usr/bin/python3
+# PYTHON_ARGCOMPLETE_OK
 import argparse
+import argcomplete
 import sys
-from sim.core.batch import run_batch, long_form_results
 
 # * Setup arguments parser
 parser = argparse.ArgumentParser(description='Run a sim-stake-batch')
@@ -32,12 +34,19 @@ parser.add_argument('--times',
 parser.add_argument(
     '--stake_f',
     required=True,
-    help='Generator function for inital stake distrib. (eq | beta | pareto)')
+    choices=['eq','beta','pareto'],
+    help='Generator function for inital stake distrib.')
 
 parser.add_argument(
     '--sim',
     required=True,
-    help='Indicate simulator class (random | const | geom | log_const | log_geom )')
+    choices=['random','const','geom','log_const','log_geom'],
+    help='Indicate simulator class')
+
+
+argcomplete.autocomplete(parser)
+
+from sim.core.batch import run_batch, long_form_results
 
 
 # Test the argumet parser
@@ -53,13 +62,22 @@ def test_0():
 # * Main function
 
 def run(args_dict,out_fn=sys.stdout.write):
+    """Run a full simulation for parameters in args_dict.
+    if not provided out_fn defaults to writing to stdout.
+    The value of args_dict['R'] will be computed as c*T.
+
+    Relies on run_batch after adding R to the dict, forawrding out_fn
+
+    """
     args_dict['R'] = args_dict['c'] * float(args_dict['T'])
     run_batch (args_dict,out_fn)
 
 def main ():
     """
     Parse arguments from argv,
-    run the batch and print the results to stdandard output
+    uses `run` to execute the batch and prints the results to stdandard output.
+
+    Invoked when __name__ == "__main__".
     """
     args = parser.parse_args ()
     args_dict = args.__dict__

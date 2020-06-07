@@ -1,3 +1,8 @@
+"""
+Module for interactive plotting.
+
+"""
+
 from matplotlib import pyplot as plt
 import seaborn as sns
 from functools import *
@@ -5,7 +10,7 @@ from functools import *
 # NOTE: for the following function,
 # if the optional arg `tot` is not provided,
 # then it is calculated from the sum of stake of the each node
-# using the following function
+# using the following lambda
 tot_stake = lambda nodes: reduce(lambda x,y: x + y.stake, nodes,0)
 
 def bar_plot_nodes(nodes,tot=None):

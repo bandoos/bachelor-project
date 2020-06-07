@@ -20,8 +20,9 @@ def ecdf(data):
         value = temp.size / size_data
         # pushing the value in the y_values
         y_values.append(value)
-    # return both x and y values    
+    # return both x and y values
     return x_values,y_values
+
 
 # Use a linear interpolator to make python function out of it.
 def make_interp(xs,ys):
