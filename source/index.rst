@@ -19,17 +19,20 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-.. automodule:: sim.core.utils
-    :members:
+Modules documentation
+=====================
 
+Base abstract classes
+---------------------
 .. automodule:: sim.core.base_object
     :members:
 
 .. automodule:: sim.core.abstract_sim
     :members:
 
-.. automodule:: sim.core.decorators
-    :members:
+
+Concrete classes implementations
+--------------
 
 .. automodule:: sim.core.sim_0
     :members:
@@ -51,3 +54,8 @@ Indices and tables
 .. automodule:: sim.core.main
     :members:
 
+.. automodule:: sim.core.decorators
+    :members:
+
+.. automodule:: sim.core.utils
+    :members:

@@ -7,3 +7,4 @@ statsmodels
 jupyter
 argcomplete
 sphinx
+groundwork-sphinx-theme

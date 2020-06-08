@@ -6,25 +6,34 @@ decorators
 utilities for verbosity and brevity
 
 """
-
+from functools import wraps
 from pprint import pprint
 
 verbose = True
 def vprint(*a,**k):
+    """
+    like `print` but suppressed when global verbose = False
+    """
     global verbose
     if verbose:
         print(*a,**k)
 
 def vpprint(a):
+
+    """
+    like `pprint.pprint` but suppressed when global verbose = False
+    """
     global verbose
     if verbose:
         pprint(a)
 
-## A decorator to make sure a piece of code
-# does not print verbose statements even if
-# the verbose global tells to do so.
 def unverbosed(f):
+    """A decorator to make sure a piece of code DOES NOT print verbose
+    statements even if the verbose global tells to do so.
+
+    """
     global verbose
+    @wraps(f)
     def decorated(*args,**kwargs):
         global verbose
         ov = verbose
@@ -35,7 +44,12 @@ def unverbosed(f):
     return decorated
 
 def verbosed(f):
+    """A decorator to make sure a piece of code DOES print verbose
+    statements even if the verbose global tells not to do so.
+
+    """
     global verbose
+    @wraps(f)
     def decorated(*args,**kwargs):
         global verbose
         ov = verbose
@@ -43,18 +57,22 @@ def verbosed(f):
         r = f(*args,**kwargs)
         verbose = ov
         return r
+
     return decorated
 
-## Sometimes i want to see the notebook without tests and demos,
-# the following decorator makes sure that when `do_demos` is false,
-# decorated functions do not execute
 do_demos = True
 def demofunc(f):
+    """
+    the following decorator makes sure that when `do_demos` is false,
+    decorated functions do not execute
+    """
     global do_demos
+    @wraps(f)
     def decorated(*args,**kwargs):
         global do_demos
         if do_demos:
             return f(*args,**kwargs)
         else:
             print("Execution of func: [{}] was suppressed by the `do_demos` global option".format(f.__name__))
+
     return decorated
