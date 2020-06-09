@@ -53,14 +53,12 @@ RUN .scripts/install.sh
 # if the node needs to bootsrtap from non-local
 # resources
 
-ENV EXECUTOR_GRIDFS='executor-gridfs'
 # db for results filesystem
-
-ENV MONGODB_URI='mongodb://localhost:27020'
+ENV EXECUTOR_GRIDFS='executor-gridfs'
 # database uri
-
-ENV REDIS_URI='redis://localhost:6399'
+ENV MONGODB_URI='mongodb://localhost:27020'
 # key value store / message broker
+ENV REDIS_URI='redis://localhost:6399'
 
 # ** link scripts
 RUN chmod +x $HOME/.scripts/*

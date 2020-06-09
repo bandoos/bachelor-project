@@ -1,6 +1,6 @@
 from setuptools import setup, find_namespace_packages
 setup(
-    name="sim.core",
+    name="sim",
     version="0.1",
     packages=find_namespace_packages(include=['sim.*']),
     entry_points={
@@ -13,4 +13,3 @@ setup(
         '': ['*.txt', '*.rst', "*.sh","*.edn"],
     }
 )
-

@@ -8,5 +8,7 @@ services:
     tty: true        # docker run -t
     volumes:
       - ./data:/home/production/data
+    env_file:
+      - vars.env
     # ports:
     #   - '27020-27022:27017-27019'

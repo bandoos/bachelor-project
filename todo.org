@@ -1,0 +1,2 @@
+* Docker deployment
+  - ensure sim.executor.celeryconf uses ENV VARS
