@@ -1,10 +1,12 @@
 import pymongo
 import sys
+import gridfs
+import os
 import tempfile as tmp
 from abc import ABC
 import abc
-import pprint
 import pprint as pp
+from bson.son import SON
 
 import sim.executor.celeryconf as conf
 
@@ -37,19 +39,17 @@ needed by closuring or using callables.
 For example for sim-core-0.1 the first invokation
 produces an header, the remaning ones produce rows.
 
-This can be persisted by creating the record on the first
-invokation and append to some field on later invokations.
-
-It could buffer updates if the output is produced at a rate
-not suitable for db updates
+It can buffer updates if the output is produced at a rate not suitable
+for db updates
 
 
 
 """
 
 
-TASK_DB = "from_celery"
-GRIDFS_DB = "executor-gridfs"
+TASK_DB = os.environ.get('EXECUTOR_DB') or "from_celery"
+GRIDFS_DB = os.environ.get('EXECUTOR_GRIDFS') or "executor-gridfs"
+CELERY_TASKMETA='celery_taskmeta'
 
 class TaskDBDriver(object):
     def __init__(self):
@@ -97,10 +97,7 @@ class TaskAppender(TaskDBDriver):
         self._flush()
         return super(TaskAppender,self).__exit__(*exc_args)
 
-from bson.son import SON
-from collections import OrderedDict
 
-CELERY_TASKMETA='celery_taskmeta'
 
 
 # * Default aggregation pipeline
@@ -127,7 +124,6 @@ def mk_agg_pipeline(lookup_coll=CELERY_TASKMETA):
 # coll = c.from_celery ['d59beb0d-90a6-491f-b3db-c58f188d99c4']
 # p = mk_agg_pipeline ()
 
-# pprint.pprint (list ( coll.aggregate (p)))
 
 class AggregationError(Exception):
     pass
@@ -202,8 +198,6 @@ tagg()
 class HeaderMismatchError(Exception):
     pass
 
-import gridfs
-import os
 
 class CsvAggregator(TaskAggregator):
     """A stateful aggregator that merges csv formatted
