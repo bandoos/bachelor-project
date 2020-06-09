@@ -65,10 +65,11 @@ import sys
 from pprint import pprint
 
 ##----------------------------------------##
+if not __name__ == "__main__":
 ## * DEVEL import environ vars
-from dotenv import load_dotenv
-from pathlib import Path  # Python 3.6+ only
-load_dotenv(Path('/home/bandoos/repos/sim-core-0.1/compose/vars.env'))
+    from dotenv import load_dotenv
+    from pathlib import Path  # Python 3.6+ only
+    load_dotenv(Path('/home/bandoos/repos/sim-core-0.1/compose/vars.env'))
 ##----------------------------------------##
 
 from sim.executor.tasks import run_exp_v2, post_proc_batch_v2
