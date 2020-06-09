@@ -57,9 +57,19 @@ argcomplete.autocomplete(parser)
 ## Main imports
 import uuid
 from celery import group
+from celery.result import AsyncResult
+
+
 from importlib import import_module
 import sys
 from pprint import pprint
+
+##----------------------------------------##
+## * DEVEL import environ vars
+from dotenv import load_dotenv
+from pathlib import Path  # Python 3.6+ only
+load_dotenv(Path('/home/bandoos/repos/sim-core-0.1/compose/vars.env'))
+##----------------------------------------##
 
 from sim.executor.tasks import run_exp_v2, post_proc_batch_v2
 
@@ -162,4 +172,16 @@ if __name__ == "__main__":
 
 
 
-#r = run_and_agg_v2_from_conf('sim.executor.experiments.exp_365')
+# * thinkering
+
+
+# r = run_and_agg_v2_from_conf('sim.executor.experiments.exp_365')
+# from pprint import pprint
+
+# for i in r.collect():
+#     result = i[0]
+#     pprint(result.__dict__)
+#     parent = result.parent
+#     for j in parent.results:
+#         # r = AsyncResult(j)
+#         print(j.__dict__)

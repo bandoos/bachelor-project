@@ -7,6 +7,7 @@ statsmodels
 jupyter
 argcomplete
 coloredlogs
+python-dotenv
 
 sphinx
 groundwork-sphinx-theme
