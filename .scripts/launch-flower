@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+DB=2
+BROKER_URI="${REDIS_URL}/${DB}"
+echo "Running flower server against ${BROKER_URI}"
+celery flower sim.executor --broker=$BROKER_URI > /tmp/flower.log

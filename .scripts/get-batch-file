@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+mongofiles -d=$EXECUTOR_GRIDFS --uri=$MONGODB_URI get $1 --local $HOME/data/$1
