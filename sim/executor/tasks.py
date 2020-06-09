@@ -14,18 +14,15 @@ Implements a custom task appender ``extending sim.executor.dbdriver``.
 
 from celery import Celery
 from celery.exceptions import SoftTimeLimitExceeded
-import os
 # import cgroups
 # import subprocess
 import pymongo
 import celery as cel
-import functools as fp
+#import functools as fp
 import itertools as it
 
 # local imports
 from sim.executor.dbdriver import TaskAppender, CsvAggregator
-from sim.executor.logger import logger
-import sim.core.main as m
 
 # Build the celery application
 app = Celery('sim-stake-executor')
@@ -144,6 +141,8 @@ def run_exp_v2(self,args_dict,
 
     """
     try:
+
+        import sim.core.main as m
         # Establish job context
         with _Job_id(self,run_exp_v2.request) as idfn:
             job_id = idfn()
