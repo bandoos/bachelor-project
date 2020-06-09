@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+[[ -z "${INIT_WORKERS}" ]] && INIT_WORKERS=4
+
+celery -A sim.executor.tasks worker --loglevel=info -E --concurrency=$INIT_WORKERS
