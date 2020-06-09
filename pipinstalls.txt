@@ -6,5 +6,11 @@ tabulate
 statsmodels
 jupyter
 argcomplete
+coloredlogs
+
 sphinx
 groundwork-sphinx-theme
+
+celery
+pymongo
+redis

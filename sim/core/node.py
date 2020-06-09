@@ -33,18 +33,18 @@ class Node(BaseObject):
         self.v_hist = [] if save_history else None
 
     def step(self,**kwargs):
-        "Add a value to the historical v"
+        """Add a value to the historical v"""
         if self.v_hist:
             self.v_hist.append(self.v(kwargs['tot']))
         return self
 
     def v(self,tot):
-        "Returns the fractional stake WRT to tot of this player"
+        """Returns the fractional stake WRT to tot of this player"""
         return (self.stake/tot)
 
     # override
     def dict(self,**kwargs):
-        "Represent node as dict. requires passing the current total stake."
+        """Represent node as dict. requires passing the current total stake."""
         if not 'tot' in kwargs.keys():
             raise Exception("Missing `tot` kwarg when generating dict for {}".format(self))
         return {**self.__dict__,
@@ -52,7 +52,7 @@ class Node(BaseObject):
 
     # op overloading
     def __add__(self,o):
-        "Adding a numeric value to a node means incrementing stake"
+        """Adding a numeric value to a node means incrementing stake"""
         if isinstance(o,numbers.Number):
             self.stake += o
             return self

@@ -32,7 +32,7 @@ Base abstract classes
 
 
 Concrete classes implementations
---------------
+--------------------------------
 
 .. automodule:: sim.core.sim_0
     :members:
@@ -58,4 +58,14 @@ Concrete classes implementations
     :members:
 
 .. automodule:: sim.core.utils
+    :members:
+
+
+Fork Pool executor
+==================
+
+.. automodule:: sim.executor.launcher
+    :members:
+
+.. automodule:: sim.executor.tasks
     :members:
