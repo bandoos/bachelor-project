@@ -1,7 +1,7 @@
 version: '3'
 services:
   pos-sim-core:
-    network_mode: "host"
+    network_mode: 'host'
     image: 'pos-sim-core:latest'
     container_name: 'pos-sim-core'
     stdin_open: true # docker run -i
