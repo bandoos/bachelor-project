@@ -26,9 +26,8 @@ batch = \
        'redundancy': REDUNDANCY })
 
 
-# if __name__ == "__main__":
-#     import pprint
-#     _batch = batch()
-
-#     pprint.pprint({'lenght':len(_batch),
-#                    'body': _batch})
+if __name__ == "__main__":
+    import pprint
+    _batch = batch()
+    pprint.pprint({'lenght':len(_batch),
+                   'body': batch.dic})

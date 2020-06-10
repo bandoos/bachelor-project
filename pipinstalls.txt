@@ -9,6 +9,8 @@ argcomplete
 coloredlogs
 python-dotenv
 
+ipython
+
 sphinx
 groundwork-sphinx-theme
 

@@ -44,12 +44,15 @@ on the batch. Instead it will print metadata to stdout.
 # ** Args parser
 import argparse
 import argcomplete
+import IPython
 from sim.executor.logger import logger
 
 parser = argparse.ArgumentParser('sim-launcher')
 parser.add_argument('--exp-module',
                     type=str,
-                    default='sim.executor.experiments.exp_365')
+                    default='sim.executor.experiments.exp_365').completer = \
+                        IPython.core.completer.Completer()
+
 parser.add_argument('--async','-a',action='store_true')
 
 argcomplete.autocomplete(parser)
@@ -64,9 +67,10 @@ from importlib import import_module
 import sys
 from pprint import pprint
 
+
+## * DEVEL import environ vars
 ##----------------------------------------##
 if not __name__ == "__main__":
-## * DEVEL import environ vars
     from dotenv import load_dotenv
     from pathlib import Path  # Python 3.6+ only
     load_dotenv(Path('/home/bandoos/repos/sim-core-0.1/compose/vars.env'))

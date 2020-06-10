@@ -4,9 +4,10 @@ RUN pacman --noconfirm -Syyu python python-pip \
 	vim zip unzip \
 	git gcc \
 	figlet \
-	sudo go
+	sudo go \
+	zsh
 
-RUN useradd -m -s /bin/bash production
+RUN useradd -m -s /bin/zsh production
 
 # Create a temporary user to install trusted aur packages
 # link yay related scripts
@@ -40,6 +41,7 @@ ENV PYTHONPATH /home/production
 
 WORKDIR $HOME
 # Enter home folder
+RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 RUN mkdir data/
 # setup data folder
@@ -64,12 +66,9 @@ ENV REDIS_URI='redis://localhost:6399'
 RUN chmod +x $HOME/.scripts/*
 RUN ln $HOME/.scripts/* $HOME/.local/bin/
 
-# RUN ln $HOME/.scripts/get-batch-file.sh $HOME/.local/bin/get-batch-file
-# RUN ln $HOME/.scripts/list-batch-files.sh $HOME/.local/bin/list-batch-files
-
-
 # ** Register autocopmetion hooks
-RUN echo 'eval "$(register-python-argcomplete sim-stake)"' >> .bashrc
-RUN echo 'eval "$(register-python-argcomplete sim-launcher)"' >> .bashrc
+RUN echo 'autoload -U bashcompinit && bashcompinit' >> .zshrc
+RUN echo 'eval "$(register-python-argcomplete sim-stake)"' >> .zshrc
+RUN echo 'eval "$(register-python-argcomplete sim-launcher)"' >> .zshrc
 
-CMD '/bin/bash'
+CMD '/bin/zsh'
