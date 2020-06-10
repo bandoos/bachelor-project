@@ -1,0 +1,690 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Welcome to sim-core-0.1’s documentation! &#8212; sim-core-0.1  documentation</title>
+    <link rel="stylesheet" href="_static/groundwork.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">sim-core-0.1  documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-sim-core-0-1-s-documentation">
+<h1>Welcome to sim-core-0.1’s documentation!<a class="headerlink" href="#welcome-to-sim-core-0-1-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="modules-documentation">
+<h1>Modules documentation<a class="headerlink" href="#modules-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-sim.core.base_object">
+<span id="base-abstract-classes"></span><h2>Base abstract classes<a class="headerlink" href="#module-sim.core.base_object" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="abstract-class-for-simulation-objects">
+<h3>Abstract class for simulation objects<a class="headerlink" href="#abstract-class-for-simulation-objects" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="sim.core.base_object.BaseObject">
+<em class="property">class </em><code class="sig-prename descclassname">sim.core.base_object.</code><code class="sig-name descname">BaseObject</code><a class="headerlink" href="#sim.core.base_object.BaseObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Foundation class for objects in the simulation.
+Offers a class variable indicating which slots
+should not be included in the object <cite>params</cite> dict.
+Offers id generation facility at the class level.</p>
+<dl class="py method">
+<dt id="sim.core.base_object.BaseObject.dict">
+<code class="sig-name descname">dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.base_object.BaseObject.dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return self.__dict__</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sim.core.base_object.BaseObject.params">
+<code class="sig-name descname">params</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.base_object.BaseObject.params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similar to <cite>dict</cite> but excludes some blacklisted items</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-sim.core.abstract_sim"></span><div class="section" id="abstractsimulation-module">
+<h3>AbstractSimulation module<a class="headerlink" href="#abstractsimulation-module" title="Permalink to this headline">¶</a></h3>
+<p>Defines the abstract base class for simulation classes</p>
+<dl class="py class">
+<dt id="sim.core.abstract_sim.AbstractSimulation">
+<em class="property">class </em><code class="sig-prename descclassname">sim.core.abstract_sim.</code><code class="sig-name descname">AbstractSimulation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes</span></em>, <em class="sig-param"><span class="n">T</span></em>, <em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.abstract_sim.AbstractSimulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encapsulates aspects shared by all concrete simulations.</p>
+<p>Including:</p>
+<ul class="simple">
+<li><p>default logging function</p></li>
+<li><p>self.T (max epochs)</p></li>
+<li><p>self.t (initial/current epoch) = 0</p></li>
+<li><p>self.s (current total stake),</p></li>
+<li><p>self.nodes (container for simulation agents),</p></li>
+<li><p>blacklisting nodes for params()</p></li>
+<li><p>some basic plotting for the nodes</p></li>
+</ul>
+<dl class="py method">
+<dt id="sim.core.abstract_sim.AbstractSimulation.give_reward">
+<em class="property">abstract </em><code class="sig-name descname">give_reward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.abstract_sim.AbstractSimulation.give_reward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to be overriden to implement reward mechanism</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sim.core.abstract_sim.AbstractSimulation.log">
+<code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.abstract_sim.AbstractSimulation.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default log facility. uses sim.core.decorators.vprint to
+conditionally report simulation info</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sim.core.abstract_sim.AbstractSimulation.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.abstract_sim.AbstractSimulation.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run all the simulaion iterations via .step().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sim.core.abstract_sim.AbstractSimulation.select_proposer">
+<em class="property">abstract </em><code class="sig-name descname">select_proposer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.abstract_sim.AbstractSimulation.select_proposer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to be overriden to implement proposer selection procedure</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sim.core.abstract_sim.AbstractSimulation.step">
+<code class="sig-name descname">step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.abstract_sim.AbstractSimulation.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs a full iteration oif the simulation.
+This method should not be overriden, it uses the overridable methods
+defining the common sequence of operations</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sim.core.abstract_sim.AbstractSimulation.step_all_nodes">
+<code class="sig-name descname">step_all_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.abstract_sim.AbstractSimulation.step_all_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invokes ste step method for all nodes in self.nodes</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-sim.core.sim_0">
+<span id="concrete-classes-implementations"></span><h2>Concrete classes implementations<a class="headerlink" href="#module-sim.core.sim_0" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="default-concrete-simulaion">
+<h3>Default concrete simulaion<a class="headerlink" href="#default-concrete-simulaion" title="Permalink to this headline">¶</a></h3>
+<p>Defines the basic concrete class for simulation extensions</p>
+<p>Extensions are defined in sim.core.implem.py module</p>
+<dl class="py class">
+<dt id="sim.core.sim_0.Simulation">
+<em class="property">class </em><code class="sig-prename descclassname">sim.core.sim_0.</code><code class="sig-name descname">Simulation</code><span class="sig-paren">(</span><em class="sig-param">T=100</em>, <em class="sig-param">m=3</em>, <em class="sig-param">R=100</em>, <em class="sig-param">stake_f=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.sim_0.Simulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>A first extension of the AbstractSimulation.
+Provides:</p>
+<ul class="simple">
+<li><p>default self.T = 100</p></li>
+<li><p>defualt self.s (initial/current total stake) = 1</p></li>
+<li><p>default self.R (total rewards) = 100</p></li>
+<li><p>default number of nodes m = 3</p></li>
+<li><p>nodes generation accoding to self.m and:</p></li>
+<li><p>default self.stake_f, used to generate intial stake distrib.</p></li>
+<li><p>self.r reward function $r(n)$ constant at self.R/T, this is
+labeled “R/T”</p></li>
+</ul>
+<dl class="py method">
+<dt id="sim.core.sim_0.Simulation.dict">
+<code class="sig-name descname">dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.sim_0.Simulation.dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reprsesent Simulation as dict.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sim.core.sim_0.Simulation.give_reward">
+<code class="sig-name descname">give_reward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.sim_0.Simulation.give_reward" title="Permalink to this definition">¶</a></dt>
+<dd><p>uses self.r (reward function) to emit reward for
+the current epoc to the given node instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sim.core.sim_0.Simulation.select_proposer">
+<code class="sig-name descname">select_proposer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.sim_0.Simulation.select_proposer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic block proposer selection:
+Choose only 1 node with a prob. eq. to their fractional stake</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.core.sim_0.make_nodes">
+<code class="sig-prename descclassname">sim.core.sim_0.</code><code class="sig-name descname">make_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">stake_f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.sim_0.make_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produce a set of nodes of size n, according to stake_f.
+The stake function will be passed the index and n while generating,
+and is responsible for assigning initial stake.
+An optional prefix may be given for id generation.</p>
+<p>This function should not be used directly, use make_nodes_norm
+which ensures sum of results is = 1</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.core.sim_0.make_nodes_norm">
+<code class="sig-prename descclassname">sim.core.sim_0.</code><code class="sig-name descname">make_nodes_norm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">stake_f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.sim_0.make_nodes_norm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as make_nodes but ensures sum of initial stakes is 1</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.core.sim_0.with_reward_fn">
+<code class="sig-prename descclassname">sim.core.sim_0.</code><code class="sig-name descname">with_reward_fn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.sim_0.with_reward_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for simulation implementation classes.</p>
+<p>Acts at the class level setting the ‘r’ attribute to
+the given reward fucntion</p>
+<p>Usage: use as decorator passing the desired reward function</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.core.sim_0.with_selection_fn">
+<code class="sig-prename descclassname">sim.core.sim_0.</code><code class="sig-name descname">with_selection_fn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.sim_0.with_selection_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as for with_reward_fn but for the selection
+procedure.</p>
+<p>Acts at the class level setting the ‘select_proposer’ attribute to
+the given selection fucntion</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-sim.core.node"></span><div class="section" id="sim-core-node">
+<h3>sim.core.node<a class="headerlink" href="#sim-core-node" title="Permalink to this headline">¶</a></h3>
+<p>Module implementing simulation entities <cite>Node</cite> reprsenting
+validator nodes of the blockchain.</p>
+<dl class="py class">
+<dt id="sim.core.node.Node">
+<em class="property">class </em><code class="sig-prename descclassname">sim.core.node.</code><code class="sig-name descname">Node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stake_0</span></em>, <em class="sig-param"><span class="n">save_history</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.node.Node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Node class reprsents stake holders.
+Very simple design, stores current absolute, stake
+and a list of historical values for v, the fractional
+stake (absolute/total).</p>
+<p>Note that storing history can be very memory expensive,
+so it must be explicitly enabled passing save_history=True</p>
+<dl class="py method">
+<dt id="sim.core.node.Node.dict">
+<code class="sig-name descname">dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.node.Node.dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represent node as dict. requires passing the current total stake.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sim.core.node.Node.step">
+<code class="sig-name descname">step</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.node.Node.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a value to the historical v</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sim.core.node.Node.v">
+<code class="sig-name descname">v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tot</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.node.Node.v" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the fractional stake WRT to tot of this player</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-sim.core.implem"></span><div class="section" id="simulation-implementation-module">
+<h3>Simulation implementation module.<a class="headerlink" href="#simulation-implementation-module" title="Permalink to this headline">¶</a></h3>
+<p>Contains the definitions of the different concrete implementations
+of the Simulation base class.</p>
+<p>NOTE: all of the class belows are
+composed by using the <cite>with_</cite> decorators from
+sim.core.sim_0.
+They may seem empty at first, but the decorators
+perform the actual extension at the class level</p>
+<dl class="py class">
+<dt id="sim.core.implem.ConstSim">
+<em class="property">class </em><code class="sig-prename descclassname">sim.core.implem.</code><code class="sig-name descname">ConstSim</code><span class="sig-paren">(</span><em class="sig-param">T=100</em>, <em class="sig-param">m=3</em>, <em class="sig-param">R=100</em>, <em class="sig-param">stake_f=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.ConstSim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constant reward, linear selection simulation.
+Just a placeholder, this is simply the default for Simulation</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="sim.core.implem.GeomSim">
+<em class="property">class </em><code class="sig-prename descclassname">sim.core.implem.</code><code class="sig-name descname">GeomSim</code><span class="sig-paren">(</span><em class="sig-param">T=100</em>, <em class="sig-param">m=3</em>, <em class="sig-param">R=100</em>, <em class="sig-param">stake_f=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.GeomSim" title="Permalink to this definition">¶</a></dt>
+<dd><p>GeomSim extend base Simulation with geometric reward function.</p>
+<dl class="py method">
+<dt id="sim.core.implem.GeomSim.r">
+<code class="sig-name descname">r</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.GeomSim.r" title="Permalink to this definition">¶</a></dt>
+<dd><p>Geometric reward function.</p>
+<p>accepts a dictionary specifying required
+parameters, and ‘t’.</p>
+<p>Suitable params dictionary is obtained by invoking .params() on a
+simulaion instance</p>
+<p>(1+R)^(t/T) - (1+R)^((t-1)/T)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="sim.core.implem.LogConstSim">
+<em class="property">class </em><code class="sig-prename descclassname">sim.core.implem.</code><code class="sig-name descname">LogConstSim</code><span class="sig-paren">(</span><em class="sig-param">T=100</em>, <em class="sig-param">m=3</em>, <em class="sig-param">R=100</em>, <em class="sig-param">stake_f=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.LogConstSim" title="Permalink to this definition">¶</a></dt>
+<dd><p>LogConstSim extends basic simulation with log based proposer
+selection.</p>
+<dl class="py method">
+<dt id="sim.core.implem.LogConstSim.select_proposer">
+<code class="sig-name descname">select_proposer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.LogConstSim.select_proposer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of the logarithmic proposer selection function.
+Note that the base of the log is irrelavant since the vector
+of logs will be normalized.</p>
+<p>Uses random.choices with weights vector determined
+by log(1 + x).</p>
+<p>Returns a single node as result.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="sim.core.implem.LogGeomSim">
+<em class="property">class </em><code class="sig-prename descclassname">sim.core.implem.</code><code class="sig-name descname">LogGeomSim</code><span class="sig-paren">(</span><em class="sig-param">T=100</em>, <em class="sig-param">m=3</em>, <em class="sig-param">R=100</em>, <em class="sig-param">stake_f=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.LogGeomSim" title="Permalink to this definition">¶</a></dt>
+<dd><p>LogGeomSim extend base Simulation with geometric reward function,
+and log10 based proposer selection.</p>
+<dl class="py method">
+<dt id="sim.core.implem.LogGeomSim.r">
+<code class="sig-name descname">r</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.LogGeomSim.r" title="Permalink to this definition">¶</a></dt>
+<dd><p>Geometric reward function.</p>
+<p>accepts a dictionary specifying required
+parameters, and ‘t’.</p>
+<p>Suitable params dictionary is obtained by invoking .params() on a
+simulaion instance</p>
+<p>(1+R)^(t/T) - (1+R)^((t-1)/T)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sim.core.implem.LogGeomSim.select_proposer">
+<code class="sig-name descname">select_proposer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.LogGeomSim.select_proposer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of the logarithmic proposer selection function.
+Note that the base of the log is irrelavant since the vector
+of logs will be normalized.</p>
+<p>Uses random.choices with weights vector determined
+by log(1 + x).</p>
+<p>Returns a single node as result.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="sim.core.implem.RandomSim">
+<em class="property">class </em><code class="sig-prename descclassname">sim.core.implem.</code><code class="sig-name descname">RandomSim</code><span class="sig-paren">(</span><em class="sig-param">T=100</em>, <em class="sig-param">m=3</em>, <em class="sig-param">R=100</em>, <em class="sig-param">stake_f=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.RandomSim" title="Permalink to this definition">¶</a></dt>
+<dd><p>RadomSim extends the normal simulation with random proposer selection.
+Used for control/refernce condition</p>
+<dl class="py method">
+<dt id="sim.core.implem.RandomSim.select_proposer">
+<code class="sig-name descname">select_proposer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.RandomSim.select_proposer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overrides selection procedure to sample nodes
+randomly with eqaul probability</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.core.implem.log_proposer_selection">
+<code class="sig-prename descclassname">sim.core.implem.</code><code class="sig-name descname">log_proposer_selection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.log_proposer_selection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of the logarithmic proposer selection function.
+Note that the base of the log is irrelavant since the vector
+of logs will be normalized.</p>
+<p>Uses random.choices with weights vector determined
+by log(1 + x).</p>
+<p>Returns a single node as result.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.core.implem.r_g">
+<code class="sig-prename descclassname">sim.core.implem.</code><code class="sig-name descname">r_g</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.r_g" title="Permalink to this definition">¶</a></dt>
+<dd><p>Geometric reward function.</p>
+<p>accepts a dictionary specifying required
+parameters, and ‘t’.</p>
+<p>Suitable params dictionary is obtained by invoking .params() on a
+simulaion instance</p>
+<p>(1+R)^(t/T) - (1+R)^((t-1)/T)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.core.implem.random_proposer_selection">
+<code class="sig-prename descclassname">sim.core.implem.</code><code class="sig-name descname">random_proposer_selection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.random_proposer_selection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overrides selection procedure to sample nodes
+randomly with eqaul probability</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-sim.core.stake_f"></span><div class="section" id="inital-stakes-generation-module">
+<h3>Inital stakes generation module<a class="headerlink" href="#inital-stakes-generation-module" title="Permalink to this headline">¶</a></h3>
+<p>defines <cite>stake_f_map</cite> and its inverse
+<cite>stake_f_label_to_fn</cite> with the implementation and labels
+for the initial stake distribution generator functions</p>
+<p>These should be used in combination with
+<cite>sim.core.sim_0.make_nodes_norm</cite> to generate
+a population of <cite>sim.core.node.Node</cite> instances</p>
+</div>
+<span class="target" id="module-sim.core.boot_exp"></span><div class="section" id="experiment-bootstrap-module">
+<h3>experiment bootstrap module<a class="headerlink" href="#experiment-bootstrap-module" title="Permalink to this headline">¶</a></h3>
+<p>defines the experiment function <cite>boot_exp</cite>
+and the stats aggregator <cite>EpisodeStats</cite>.</p>
+<dl class="py class">
+<dt id="sim.core.boot_exp.EpisodeStats">
+<em class="property">class </em><code class="sig-prename descclassname">sim.core.boot_exp.</code><code class="sig-name descname">EpisodeStats</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.boot_exp.EpisodeStats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stateful aggregator for experiment response variables.</p>
+<p><cite>self.set_init</cite> should be called berfore each simulation run,
+passing the sim instance.</p>
+<p><cite>self.set_finals</cite> should be called after a simulation terminated
+passing the sim instance to finalize the statistics.</p>
+<p><cite>self.mk_row</cite> should be called after set_finals with no arguments
+and will format as csv row string the current state</p>
+<dl class="py method">
+<dt id="sim.core.boot_exp.EpisodeStats.mk_row">
+<code class="sig-name descname">mk_row</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.boot_exp.EpisodeStats.mk_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>to be called after set_finals will return the csv string for
+current cached values</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sim.core.boot_exp.EpisodeStats.set_finals">
+<code class="sig-name descname">set_finals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.boot_exp.EpisodeStats.set_finals" title="Permalink to this definition">¶</a></dt>
+<dd><p>To be called after each simulation repetition.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sim.core.boot_exp.EpisodeStats.set_init">
+<code class="sig-name descname">set_init</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.boot_exp.EpisodeStats.set_init" title="Permalink to this definition">¶</a></dt>
+<dd><p>To be called before each sulation repetition.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.core.boot_exp.boot_exp">
+<code class="sig-prename descclassname">sim.core.boot_exp.</code><code class="sig-name descname">boot_exp</code><span class="sig-paren">(</span><em class="sig-param">params</em>, <em class="sig-param">out_fn=&lt;built-in method write of _io.TextIOWrapper object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.boot_exp.boot_exp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bootstrap experiment, builds a simulation forawrding kwargs in
+params to the appropriate Simulation extension constructor.</p>
+<p>The simulation is repeated <cite>times</cite> times, and dumps stats produced
+by <cite>EpisodeStats</cite> via <cite>out_fn</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.core.boot_exp.fill_in_fns">
+<code class="sig-prename descclassname">sim.core.boot_exp.</code><code class="sig-name descname">fill_in_fns</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ps</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.boot_exp.fill_in_fns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform parameters with pointers to class and functions</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.core.boot_exp.gini_coeff">
+<code class="sig-prename descclassname">sim.core.boot_exp.</code><code class="sig-name descname">gini_coeff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pop</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.boot_exp.gini_coeff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes Gini coefficient for a sample</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-sim.core.main"></span><div class="section" id="main-module">
+<h3>Main module<a class="headerlink" href="#main-module" title="Permalink to this headline">¶</a></h3>
+<p>Provides functions to run a full simulaion
+from either a dict with <cite>run</cite> or argv with <cite>main</cite></p>
+<p>Acts as executable if __name__ == ‘__main__’
+parsing the parameters dictionary from argv</p>
+<dl class="py function">
+<dt id="sim.core.main.main">
+<code class="sig-prename descclassname">sim.core.main.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.main.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse arguments from argv,
+uses <cite>run</cite> to execute the batch and prints the results to stdandard output.</p>
+<p>Invoked when __name__ == “__main__”.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.core.main.run">
+<code class="sig-prename descclassname">sim.core.main.</code><code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">args_dict</em>, <em class="sig-param">out_fn=&lt;built-in method write of _io.TextIOWrapper object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.main.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a full simulation for parameters in args_dict.
+if not provided out_fn defaults to writing to stdout.
+The value of args_dict[‘R’] will be computed as c*T.</p>
+<p>Relies on run_batch after adding R to the dict, forawrding out_fn</p>
+<p>Use this function is importing the project as lib instead
+of main which reads args from argv</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-sim.core.decorators"></span><div class="section" id="decorators">
+<h3>decorators<a class="headerlink" href="#decorators" title="Permalink to this headline">¶</a></h3>
+<p>utilities for verbosity and brevity</p>
+<dl class="py function">
+<dt id="sim.core.decorators.demofunc">
+<code class="sig-prename descclassname">sim.core.decorators.</code><code class="sig-name descname">demofunc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.decorators.demofunc" title="Permalink to this definition">¶</a></dt>
+<dd><p>the following decorator makes sure that when <cite>do_demos</cite> is false,
+decorated functions do not execute</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.core.decorators.unverbosed">
+<code class="sig-prename descclassname">sim.core.decorators.</code><code class="sig-name descname">unverbosed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.decorators.unverbosed" title="Permalink to this definition">¶</a></dt>
+<dd><p>A decorator to make sure a piece of code DOES NOT print verbose
+statements even if the verbose global tells to do so.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.core.decorators.verbosed">
+<code class="sig-prename descclassname">sim.core.decorators.</code><code class="sig-name descname">verbosed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.decorators.verbosed" title="Permalink to this definition">¶</a></dt>
+<dd><p>A decorator to make sure a piece of code DOES print verbose
+statements even if the verbose global tells not to do so.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.core.decorators.vpprint">
+<code class="sig-prename descclassname">sim.core.decorators.</code><code class="sig-name descname">vpprint</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.decorators.vpprint" title="Permalink to this definition">¶</a></dt>
+<dd><p>like <cite>pprint.pprint</cite> but suppressed when global verbose = False</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.core.decorators.vprint">
+<code class="sig-prename descclassname">sim.core.decorators.</code><code class="sig-name descname">vprint</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">a</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">k</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.decorators.vprint" title="Permalink to this definition">¶</a></dt>
+<dd><p>like <cite>print</cite> but suppressed when global verbose = False</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-sim.core.utils"></span><div class="section" id="utilities-module">
+<h3>Utilities module<a class="headerlink" href="#utilities-module" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="sim.core.utils.summarize">
+<code class="sig-prename descclassname">sim.core.utils.</code><code class="sig-name descname">summarize</code><span class="sig-paren">(</span><em class="sig-param">res, keys, id_key='exp_id', fs=[('mu', &lt;function mean&gt;), ('var', &lt;function var&gt;)]</em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.utils.summarize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summarize a dict. of results.
+Input: a dict <cite>res</cite>, which should contain
+for each key in keys a list of numbers.
+Output: produces a new dictionary, keeping the <cite>id_key</cite> field,
+and summarising the data of <cite>keys</cite>
+for each function in fs.
+Fs should be a list of tuples (name,func).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.core.utils.to_lists">
+<code class="sig-prename descclassname">sim.core.utils.</code><code class="sig-name descname">to_lists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">results</span></em>, <em class="sig-param"><span class="n">keys</span></em>, <em class="sig-param"><span class="n">subkey</span></em>, <em class="sig-param"><span class="n">id_key</span><span class="o">=</span><span class="default_value">'exp_id'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.utils.to_lists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of summarized results,
+return a table, with header the ‘exp_id’ of each
+result, and one row per metric in keys.
+Note since records in a result are dicts themsevels,
+the <cite>subkey</cite> is used to access the inner dict.</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+<div class="section" id="module-sim.executor.launcher">
+<span id="fork-pool-executor"></span><h1>Fork Pool executor<a class="headerlink" href="#module-sim.executor.launcher" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="sim-executor-launcher">
+<h2>sim.executor.launcher<a class="headerlink" href="#sim-executor-launcher" title="Permalink to this headline">¶</a></h2>
+<p>provides cli to dispatch experiment batches.</p>
+<p>An Experiment definition is any module that
+exports a <code class="docutils literal notranslate"><span class="pre">batch</span></code> member. <code class="docutils literal notranslate"><span class="pre">batch</span></code> should
+be a callable that returns a list of dictionaries
+being the arguments for each simulaion in the batch.</p>
+<p>Default experiments are defined in sim.executor.experiments
+using the <code class="docutils literal notranslate"><span class="pre">executor.batch.ibatch</span></code> semantics.
+Note though that any python module in the $PYTHONPATH
+exporting a valid <code class="docutils literal notranslate"><span class="pre">batch</span></code> callable is good to go.</p>
+<p>The name of the module shoudl be provided as
+‘–exp-module’ from cli and as ‘exp_module’ if using
+programmatically via run() instead of main()</p>
+<p>When running from cli passing the ‘–async’ flag will
+not force the program to wait for post_processing completion
+on the batch. Instead it will print metadata to stdout.</p>
+<dl class="py exception">
+<dt id="sim.executor.launcher.NotCallableError">
+<em class="property">exception </em><code class="sig-prename descclassname">sim.executor.launcher.</code><code class="sig-name descname">NotCallableError</code><a class="headerlink" href="#sim.executor.launcher.NotCallableError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="sim.executor.launcher.run">
+<code class="sig-prename descclassname">sim.executor.launcher.</code><code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args_dict</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.executor.launcher.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dispatch a batch from args_dict.</p>
+<p>args_dict should countain the ‘exp_module’ key with value a string
+pointing to an importable module</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.executor.launcher.run_and_agg_v2">
+<code class="sig-prename descclassname">sim.executor.launcher.</code><code class="sig-name descname">run_and_agg_v2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">batch_fn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.executor.launcher.run_and_agg_v2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expand the given batch, generate uuid for the batch,
+then dispatch a group of tasks to the main queue, and a callaback
+to process all results after.
+uses``sim.executor.tasks.run_exp_v2`` to run the experiment and
+<code class="docutils literal notranslate"><span class="pre">sim.executor.task.post_proc_batch_v2</span></code> for the post-processing</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sim.executor.launcher.run_and_agg_v2_from_conf">
+<code class="sig-prename descclassname">sim.executor.launcher.</code><code class="sig-name descname">run_and_agg_v2_from_conf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module_name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.executor.launcher.run_and_agg_v2_from_conf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as run_and_agg_v2 but loads the batch_fn
+from a module, dynamically imported.
+The batch_fn should be a memeber of the loaded module
+named <code class="docutils literal notranslate"><span class="pre">batch</span></code>.</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-sim.executor.tasks"></span><div class="section" id="executor-tasks-module">
+<h2>Executor tasks module<a class="headerlink" href="#executor-tasks-module" title="Permalink to this headline">¶</a></h2>
+<p>Defines celery tasks required for the experiment:</p>
+<ul class="simple">
+<li><p>run_exp_v2</p></li>
+<li><p>post_proc_batch_v2</p></li>
+</ul>
+<p>Implements a custom task appender <code class="docutils literal notranslate"><span class="pre">extending</span> <span class="pre">sim.executor.dbdriver</span></code>.</p>
+<dl class="py exception">
+<dt id="sim.executor.tasks.HeaderMismatchError">
+<em class="property">exception </em><code class="sig-prename descclassname">sim.executor.tasks.</code><code class="sig-name descname">HeaderMismatchError</code><a class="headerlink" href="#sim.executor.tasks.HeaderMismatchError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="sim.executor.tasks.MissingJobIdError">
+<em class="property">exception </em><code class="sig-prename descclassname">sim.executor.tasks.</code><code class="sig-name descname">MissingJobIdError</code><a class="headerlink" href="#sim.executor.tasks.MissingJobIdError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="sim.executor.tasks.ZeroSuccessfullJobsError">
+<em class="property">exception </em><code class="sig-prename descclassname">sim.executor.tasks.</code><code class="sig-name descname">ZeroSuccessfullJobsError</code><a class="headerlink" href="#sim.executor.tasks.ZeroSuccessfullJobsError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="sim.executor.tasks.with_job_id">
+<code class="sig-prename descclassname">sim.executor.tasks.</code><code class="sig-name descname">with_job_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ctx</span></em>, <em class="sig-param"><span class="n">task_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.executor.tasks.with_job_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensures an exception is thrown if
+task_id is None. The exception will
+include the ctx object passed.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to sim-core-0.1’s documentation!</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#modules-documentation">Modules documentation</a><ul>
+<li><a class="reference internal" href="#module-sim.core.base_object">Base abstract classes</a><ul>
+<li><a class="reference internal" href="#abstract-class-for-simulation-objects">Abstract class for simulation objects</a></li>
+<li><a class="reference internal" href="#abstractsimulation-module">AbstractSimulation module</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-sim.core.sim_0">Concrete classes implementations</a><ul>
+<li><a class="reference internal" href="#default-concrete-simulaion">Default concrete simulaion</a></li>
+<li><a class="reference internal" href="#sim-core-node">sim.core.node</a></li>
+<li><a class="reference internal" href="#simulation-implementation-module">Simulation implementation module.</a></li>
+<li><a class="reference internal" href="#inital-stakes-generation-module">Inital stakes generation module</a></li>
+<li><a class="reference internal" href="#experiment-bootstrap-module">experiment bootstrap module</a></li>
+<li><a class="reference internal" href="#main-module">Main module</a></li>
+<li><a class="reference internal" href="#decorators">decorators</a></li>
+<li><a class="reference internal" href="#utilities-module">Utilities module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-sim.executor.launcher">Fork Pool executor</a><ul>
+<li><a class="reference internal" href="#sim-executor-launcher">sim.executor.launcher</a></li>
+<li><a class="reference internal" href="#executor-tasks-module">Executor tasks module</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">sim-core-0.1  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, bandoos.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.0.
+    </div>
+  </body>
+</html>
