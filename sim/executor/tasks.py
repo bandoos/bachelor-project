@@ -22,7 +22,7 @@ import celery as cel
 import itertools as it
 
 # local imports
-from sim.executor.dbdriver import TaskAppender, CsvAggregator
+from sim.executor.dbdriver import TaskAppender, CsvAggregator, ExpTaskAppender
 
 # Build the celery application
 app = Celery('sim-stake-executor')
@@ -51,39 +51,6 @@ class ZeroSuccessfullJobsError(Exception):
 class MissingJobIdError(Exception):
     pass
 
-# * Extend the DB task appender
-
-class ExpTaskAppender(TaskAppender):
-    """Task appender for the main experiment.
-    Being an extension of TaskAppender means Required `*args` include:
-
-    - batch_id
-
-    Optional kwargs include
-
-    - buff_size=1
-
-
-    Will log documents to a mongodb collection named as
-    the value of batch_id in the database
-    ``sim.executor.dbdriver.TASK_DB``
-
-    """
-    def __init__(self,job_id,*args,**kw):
-        super().__init__(*args,**kw)
-        self.serial_n = -1 # this implem uses 1 meta doc (i.e. negative serial)
-        self.job_id = job_id
-        self({'event':'appender-setup'}) # <- setup meta doc
-
-    def _serial_sign(self,x):
-        d = x if isinstance(x,dict) else {'payload':x}
-        d['serial_n'] = self.serial_n
-        d['job_id'] = self.job_id
-        self.serial_n += 1
-        return d
-
-    def __call__(self,*args):
-        return self._append(map(self._serial_sign, args))
 
 def with_job_id(ctx,task_id):
     """
@@ -97,7 +64,10 @@ def with_job_id(ctx,task_id):
 
 
 class _Job_id():
-    """ Context manager for job id
+    """Context manager for job id.
+    Ensures the given req has a id member.  When called raising
+    MissingJobIdError otherwise.
+
     """
     def __init__(self,ctx,req):
         self.ctx = ctx
@@ -114,6 +84,9 @@ class _Job_id():
     def __exit__(self,*args):
         pass
 
+## Todo define a base class for the callable task
+# such that try except logic is abstracted this should also make the
+# task autodocumented
 
 @cel.task(bind=True) # register the task on app
 def run_exp_v2(self,args_dict,
@@ -141,7 +114,7 @@ def run_exp_v2(self,args_dict,
 
     """
     try:
-
+        # import the simulator dynamically
         import sim.core.main as m
         # Establish job context
         with _Job_id(self,run_exp_v2.request) as idfn:

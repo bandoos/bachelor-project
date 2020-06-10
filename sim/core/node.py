@@ -1,4 +1,6 @@
 """
+sim.core.node
+=============
 Module implementing simulation entities `Node` reprsenting
 validator nodes of the blockchain.
 

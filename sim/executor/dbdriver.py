@@ -1,3 +1,24 @@
+"""
+dbriver (database interface module)
+===================================
+
+Defines the base classes used to define
+database drivers.
+
+Includes a general ``TaskDBDriver`` class
+plus ``TaskAppender`` for output collection
+and ``TaskAggregator`` for output postprocessing.
+
+A csv-based implementation of ``TaskAggregator`` is defined.
+
+TODO move the corresponding appender ``ExpTaskAppender`` from
+tasks to here. Also dbdriver could be a module
+
+The classes defined in this module should be used as context managers
+in a `with` statement to ensure resources are released, especially in long
+running jobs
+
+"""
 import pymongo
 import sys
 import gridfs
@@ -52,6 +73,11 @@ GRIDFS_DB = os.environ.get('EXECUTOR_GRIDFS') or "executor-gridfs"
 CELERY_TASKMETA='celery_taskmeta'
 
 class TaskDBDriver(object):
+    """Database client wrapper that can be used as context in a `with`
+    statement.  When the context is exited the db connection resources
+    are released.
+
+    """
     def __init__(self):
         self.c = Client()
         self.db = self.c[TASK_DB]
@@ -67,8 +93,23 @@ class TaskDBDriver(object):
     def __repr__(self):
         return f'<{type(self)}: {pp.pformat(self.__dict__)}>'
 
+# * Output stages
 
 class TaskAppender(TaskDBDriver):
+    """Base appender that flushes to
+    a colletion named like batch_id in the
+    ``TASK_DB`` database.
+
+    If `buff_size` is specified at constructor level
+    then that will be the size of the docuement buffer before
+    flushing. This is the number of documents, not their size in bytes.
+    Buffering defaults to 1 i.e. no buffering
+
+    Toplevel usage should only use this objects as callables, under a
+    `with` statement context, ensuring db resources are released and
+    the buffer is flushed.
+
+    """
     def __init__(self,batch_id, buff_size=1):
         super().__init__()
         self.batch_id = batch_id
@@ -78,6 +119,7 @@ class TaskAppender(TaskDBDriver):
 
 
     def _flush(self):
+        """Flush contents of the buffer to the database"""
         if len(self.buff) > 0:
             r =  self.coll.insert_many(self.buff)
             self.buff = []
@@ -90,6 +132,8 @@ class TaskAppender(TaskDBDriver):
         return self._flush()
 
     def __call__(self,*args):
+        """Using the object as callable will trigger an ``_append``
+        Which will flush if buffering size was reached."""
         return self._append(args)
 
 
@@ -98,9 +142,51 @@ class TaskAppender(TaskDBDriver):
         return super(TaskAppender,self).__exit__(*exc_args)
 
 
+# ** Basic Extension
+
+class ExpTaskAppender(TaskAppender):
+    """Task appender for the main experiment.
+    Being an extension of TaskAppender means Required `*args` include:
+
+    - batch_id
+
+    Optional kwargs include
+
+    - buff_size=1
 
 
-# * Default aggregation pipeline
+    Will log documents to a mongodb collection named as
+    the value of batch_id in the database
+    ``sim.executor.dbdriver.TASK_DB``
+
+    Keeps track of the serial number of the output record.  Produces a
+    meta record (i.e. serial_n = -1) to notify the setup of the
+    appender.
+
+    Records produced by this appender are
+    {'payload':<any>, 'serial_n':<int>, 'job_id':<uuid-str>}
+
+    """
+    def __init__(self,job_id,*args,**kw):
+        super().__init__(*args,**kw)
+        self.serial_n = -1 # this implem uses 1 meta doc (i.e. negative serial)
+        self.job_id = job_id
+        self({'event':'appender-setup'}) # <- setup meta doc
+        self._flush() # <- force the meta write
+
+    def _serial_sign(self,x):
+        d = {'payload':x}
+        d['serial_n'] = self.serial_n
+        d['job_id'] = self.job_id
+        self.serial_n += 1
+        return d
+
+    def __call__(self,*args):
+        return self._append(map(self._serial_sign, args))
+
+# * Aggregation stages
+
+# ** Default aggregation pipeline
 # joins with the celery_taskmeta to
 # attach task metadata to output documents
 
@@ -129,6 +215,18 @@ class AggregationError(Exception):
     pass
 
 class TaskAggregator(TaskDBDriver):
+    """Basic aggregator.
+
+    the ``kernel`` method should be overriden by subclasses
+    to implement domain specific logic.
+
+    Toplevel usage should use these objects as callables,
+    passing arguments required by the specific kernel.
+
+    Note that since this is TaskDBDriver extension it should
+    be used in a `with` context to ensure resource cleanup.
+
+    """
     # state:
     # batch_id : str
     # cursor : Maybe <pymongo Cursor>
@@ -277,45 +375,3 @@ class CsvAggregator(TaskAggregator):
 #     agg()
 
 #csvagg()
-
-
-
-# * combing context managers
-
-
-
-
-"""
-class A():
-    def __enter__(self):
-        print("enter A")
-        return self
-
-    def __exit__(self,*args):
-        print("exit A")
-
-class B(A):
-
-    def __call__(self):
-        raise Exception('ti')
-
-    def __enter__(self):
-        super(B,self).__enter__()
-        print("enter B")
-        return self
-
-    def __exit__(self,*args):
-        print("exit B")
-        return super(B,self).__exit__(*args)
-
-
-
-b = B()
-
-
-
-with b as ctx:
-##    ctx()
-    print("mona")
-
-"""
