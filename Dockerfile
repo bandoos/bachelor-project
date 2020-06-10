@@ -70,5 +70,6 @@ RUN ln $HOME/.scripts/* $HOME/.local/bin/
 RUN echo 'autoload -U bashcompinit && bashcompinit' >> .zshrc
 RUN echo 'eval "$(register-python-argcomplete sim-stake)"' >> .zshrc
 RUN echo 'eval "$(register-python-argcomplete sim-launcher)"' >> .zshrc
+RUN echo 'eval "$(register-python-argcomplete dctl)"' >> .zshrc
 
 CMD '/bin/zsh'
