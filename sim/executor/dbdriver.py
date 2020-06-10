@@ -32,6 +32,9 @@ from bson.son import SON
 import sim.executor.celeryconf as conf
 
 class Client(pymongo.MongoClient):
+    """Extends the pymongo client
+    to setup from config files
+    """
     def __init__(self):
         super().__init__(conf.result_backend)
 
@@ -68,11 +71,7 @@ for db updates
 """
 
 
-TASK_DB = os.environ.get('EXECUTOR_DB') or "from_celery"
-GRIDFS_DB = os.environ.get('EXECUTOR_GRIDFS') or "executor-gridfs"
-CELERY_TASKMETA='celery_taskmeta'
-
-class TaskDBDriver(object):
+class DBDriver(object):
     """Database client wrapper that can be used as context in a `with`
     statement.  When the context is exited the db connection resources
     are released.
@@ -80,8 +79,6 @@ class TaskDBDriver(object):
     """
     def __init__(self):
         self.c = Client()
-        self.db = self.c[TASK_DB]
-        self.state = {'phase':None}
 
     # as Context manager
     def __enter__(self):
@@ -92,6 +89,28 @@ class TaskDBDriver(object):
 
     def __repr__(self):
         return f'<{type(self)}: {pp.pformat(self.__dict__)}>'
+
+    # def __getattribute__(self,x):
+    #     return self.c[x]
+
+
+
+
+TASK_DB = os.environ.get('EXECUTOR_DB') or "from_celery"
+GRIDFS_DB = os.environ.get('EXECUTOR_GRIDFS') or "executor-gridfs"
+CELERY_TASKMETA='celery_taskmeta'
+
+class TaskDBDriver(DBDriver):
+    """Database client wrapper that can be used as context in a `with`
+    statement.  When the context is exited the db connection resources
+    are released.
+
+    """
+    def __init__(self):
+        super().__init__()
+        self.db = self.c[TASK_DB]
+        self.state = {'phase':None}
+
 
 # * Output stages
 
