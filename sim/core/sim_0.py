@@ -12,8 +12,9 @@ from random import choices
 from sim.core.decorators import *
 from sim.core.abstract_sim import *
 from sim.core.stake_f import *
+from sim.core.sel_f import selection_fn_mappings
+from sim.core.rew_f import rew_fn_mappings
 from sim.core.node import *
-
 
 class Simulation(AbstractSimulation):
     """A first extension of the AbstractSimulation.
@@ -31,8 +32,8 @@ class Simulation(AbstractSimulation):
 
     - default self.stake_f, used to generate intial stake distrib.
 
-    - self.r reward function $r(n)$ constant at self.R/T, this is
-      labeled "R/T"
+    Reward function `type(self).r` and selection mechanism `self.select_proposer` should still be implemented
+    by extensions of this class
 
     """
 
@@ -54,26 +55,19 @@ class Simulation(AbstractSimulation):
         # function slots
         self.stake_f = stake_f # function used to generate initial distribution of stake
 
-        # default reward function is constant R/T
-        self.r = lambda _: self.R/self.T # function used to determine reward
-
         # logging
         self.log("Initialised simulation: ")
         vpprint(self.params())
 
-    def select_proposer(self):
-        """Basic block proposer selection:
-        Choose only 1 node with a prob. eq. to their fractional stake
-        """
-        probs = [ n.stake for n in self.nodes ] # directly use stake frac.
-        chosen = choices(self.nodes, probs, k=1)[0] # draw 1 from this urn
-        return chosen
 
     def give_reward(self,node):
-        """ uses self.r (reward function) to emit reward for
-        the current epoc to the given node instance.
+        """ uses type(self).r (reward function) to emit reward for
+        the current epoch to the given node instance.
         """
-        rew = self.r(self.params()) # compute reward for this timestep
+        rew_fn = type(self).r
+        if rew_fn  is None:
+            raise Exception(f'Reward function {type(self)}.r was never set!')
+        rew = rew_fn(self.params()) # compute reward for this timestep
         self.log("r(n) = ", rew)
         node + rew # give reward to target node
         return rew
@@ -85,7 +79,8 @@ class Simulation(AbstractSimulation):
         return {
             **self.__dict__,
             'stake_f': stake_f_map[self.stake_f],
-            'r': 'R/T', # textually reprsents the default function
+            'sel_f': selection_fn_mappings[type(self).select_proposer],
+            'rew_f': rew_fn_mappings[type(self).r],
             'nodes': [ n.dict(tot=self.s) for n in self.nodes ]
         }
 

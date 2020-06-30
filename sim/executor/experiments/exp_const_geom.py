@@ -20,7 +20,9 @@ batch = \
     P({'m':  [10 ** i for i in range(1,4)],
        'T':  [10 ** i for i in range(2,4)],
        'c':  [0.001, 0.01, 0.1, 0.5, 1, 2, 10, 100],
-       'sim':        ['const','geom','log_const','log_geom','random'],
+       'sim':        ['random',
+                      'const','geom',
+                      'log_const','log_geom'],
        'stake_f':    ['eq','beta','pareto'],
        'times':      [REPETITIONS],
        'redundancy': REDUNDANCY })
