@@ -1,7 +1,7 @@
 # ** Reward functions
 
 def r_const(params):
-    params['R']/params['T']
+    return params['R']/params['T']
 
 # define geometric reward function:
 

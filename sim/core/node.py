@@ -59,5 +59,4 @@ class Node(BaseObject):
             self.stake += o
             return self
         else:
-            raise Exception("Cannot __add__ [{}] to Node instance: {}"\
-                  .format(o,self))
+            raise Exception("Cannot __add__ [{}] to Node instance: {}".format(o,self))
