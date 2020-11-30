@@ -25,7 +25,7 @@ setup(
         'ipython',
         'sphinx',
         'groundwork-sphinx-theme',
-        'celery',
+        'celery==4.4.3',
         'pymongo',
         'redis',
     ],
