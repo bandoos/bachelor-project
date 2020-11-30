@@ -1,0 +1,19 @@
+version: '3'
+services:
+
+  database:
+    image: 'mongo:latest'
+    container_name: 'executor-db'
+    volumes:
+      # - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./mongo-volume:/data/db
+    ports:
+      - '27020-27022:27017-27019'
+
+  redis:
+    image: 'redis:latest'
+    container_name: 'executor-redis'
+    ports:
+      - '6399:6379'
+    volumes:
+      - ./redis-data:/var/lib/redis
