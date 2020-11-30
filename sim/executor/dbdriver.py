@@ -277,6 +277,7 @@ class TaskAggregator(TaskDBDriver):
         pass
 
     def _check_doc_sanity (self,doc):
+        # print(doc)
         if doc ['job_meta'] ['status'] == "SUCCESS" and \
            doc ['job_meta'] ['result'] ['job-exit'] == 0:
             return True
@@ -294,7 +295,6 @@ class TaskAggregator(TaskDBDriver):
     def __exit__(self,*exc_args):
         self.cursor and self.cursor.close()
         super(TaskAggregator,self).__exit__(*exc_args)
-
 
 
 class TaskResPrinter(TaskAggregator):

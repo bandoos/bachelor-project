@@ -1,5 +1,8 @@
 #+TITLE: sim-core-0.1 README
 
+* TODO
+  - change default vars.env to localhost
+
 * Standard mode
 ** Installation
 
@@ -280,9 +283,45 @@ required arguments:
      {'mode': 'b', 'sub_mode': 'b2'}]
     #+end_src
 
+    A real experiment definition for the simulation could be:
+    #+begin_src python
+    from sim.executor.batch.ibatch import P
+    REPETITIONS=10
+    REDUNDANCY=2
+    batch = P({'m':  [10 ** i for i in range(1,4)], # 3 elems
+               'T':  [10 ** i for i in range(2,4)], # 2 elems
+               'c':  [0.001, 0.01, 0.1, 0.5, 1, 2, 10, 100], # 8
+               'sim':        ['const','geom','log_const','log_geom','random'], # 5 elmes
+               'stake_f':    ['eq','beta','pareto'], # 3 elems
+               'times':      [REPETITIONS],
+               'redundancy': range(REDUNDANCY) })
+    #+end_src
 
+    Which will generate $3*2*8*5*3=720$ unique parameters configurations,
+    which are replicated =REDUNDANCY= times (thus 1440 runs) each of which
+    tests the configuration =REPETITIONS= times (thus 14'400 total simulations).
 
+    'redundancy' in this case is a dummy key, the actual simulation
+    will not read its value, but it still multiplies the number of
+    generated parameter dictionaries. The reason for having both
+    'times' and 'redundancy' should become clear when the distributed
+    multiprocess facility is introduced; in a single process
+    environment one should just use 'times'.
 
+    the above experiment could be run as follows:
+
+    #+begin_src python
+    import sim.core.main as simulation
+    header = True
+    for params in batch():
+	simulation.run(params,header=header)
+	if header:
+	    header=False
+    #+end_src
+
+    A large experiment like the one above may take very long to terminate
+    which is why the software is meant to be run in a distributed multiprocess
+    fashion thanks to celery [[https://github.com/celery/celery]].
 
 
 
@@ -291,3 +330,52 @@ required arguments:
 * Docker mode
    <<sec:dockermode>>
    ...
+
+
+
+|-----------------------------+-------+-------+-------+---------+------|
+| Language                    | Files | Lines | Blank | Comment | Code |
+|-----------------------------+-------+-------+-------+---------+------|
+| Python                      |    40 |  2993 |   755 |     316 | 1922 |
+|-----------------------------+-------+-------+-------+---------+------|
+| =./executor/dbdriver.py=    |       |   396 |   109 |      25 |  262 |
+| =./executor/tasks.py=       |       |   168 |    44 |      12 |  112 |
+| =./core/boot_exp.py=        |       |   144 |    32 |       3 |  109 |
+| =/core/test/stake-sim-0.py= |       |   159 |    35 |      15 |  109 |
+| =./executor/launcher.py=    |       |   192 |    54 |      37 |  101 |
+| =./core/sim_0.py=           |       |   144 |    35 |      11 |   98 |
+| =/executor/batch/ibatch.py= |       |   145 |    41 |      10 |   94 |
+| =./core/abstract_sim.py=    |       |   123 |    29 |      14 |   80 |
+| =./parser/aparse.py=        |       |   113 |    23 |      13 |   77 |
+| =./core/plot.py=            |       |    88 |    16 |       4 |   68 |
+| =./core/decorators.py=      |       |    78 |    12 |       1 |   65 |
+| =./core/implem.py=          |       |    94 |    23 |      10 |   61 |
+| =./executor/db/fs.py=       |       |    94 |    30 |       9 |   55 |
+| =./core/utils.py=           |       |    64 |    12 |       1 |   51 |
+| =./core/node.py=            |       |    62 |    13 |       3 |   46 |
+| =./core/main.py=            |       |    67 |    18 |       5 |   44 |
+| =./cmd/ucmd.py=             |       |    54 |    11 |       3 |   40 |
+| =./core/parser.py=          |       |    54 |    14 |       1 |   39 |
+| =./core/base_object.py=     |       |    63 |    16 |       9 |   38 |
+| =./core/test/random1.py=    |       |    46 |    15 |       0 |   31 |
+| =./core/sel_f.py=           |       |    42 |     8 |       6 |   28 |
+| =./core/stake_f.py=         |       |    50 |    11 |      12 |   27 |
+| =./executor/celeryconf.py=  |       |    37 |    11 |       0 |   26 |
+| =./executor/db/parser.py=   |       |    32 |     7 |       0 |   25 |
+| =./core/test/batch.py=      |       |    63 |    16 |      25 |   22 |
+| =./executor/db/cmd.py=      |       |    43 |    15 |       6 |   22 |
+| =./executor/test/ctx.py=    |       |    39 |    16 |       2 |   21 |
+| =riments/exp_const_geom.py= |       |    39 |    11 |       9 |   19 |
+| =./core/ecdf.py=            |       |    32 |     3 |      10 |   19 |
+| =nts/exp_const_geom_pt2.py= |       |    36 |    10 |       7 |   19 |
+| =or/experiments/exp_365.py= |       |    33 |     9 |       7 |   17 |
+| =utor/experiments/exp_0.py= |       |    34 |    10 |       7 |   17 |
+| =tor/experiments/exp_01.py= |       |    34 |    10 |       7 |   17 |
+| =or/experiments/exp_log.py= |       |    39 |    11 |      11 |   17 |
+| =./core/rew_f.py=           |       |    27 |     9 |       2 |   16 |
+| =./core/test/tx.py=         |       |    21 |     6 |       1 |   14 |
+| =./core/__init__.py=        |       |    10 |     3 |       0 |    7 |
+| =./executor/logger.py=      |       |    17 |     3 |      10 |    4 |
+| =./executor/db/logger.py=   |       |    15 |     3 |       8 |    4 |
+| =ecutor/experiments/foo.py= |       |     2 |     1 |       0 |    1 |
+|-----------------------------+-------+-------+-------+---------+------|
