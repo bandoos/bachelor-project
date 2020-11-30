@@ -14,10 +14,10 @@ Implements a custom task appender ``extending sim.executor.dbdriver``.
 
 from celery import Celery
 from celery.exceptions import SoftTimeLimitExceeded
+import celery as cel
 # import cgroups
 # import subprocess
 import pymongo
-import celery as cel
 #import functools as fp
 import itertools as it
 
@@ -88,7 +88,7 @@ class _Job_id():
 # such that try except logic is abstracted this should also make the
 # task autodocumented
 
-@cel.task(bind=True) # register the task on app
+@app.task(bind=True) # register the task on app
 def run_exp_v2(self,args_dict,
                     batch_uuid,
                     handle_all=True,
@@ -151,8 +151,7 @@ def run_exp_v2(self,args_dict,
 
 
 
-
-@cel.task(bind=True)
+@app.task(bind=True)
 def post_proc_batch_v2(self,batch_uuid):
     try:
         base = {'batch_uuid':batch_uuid,

@@ -1,12 +1,13 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Welcome to sim-core-0.1’s documentation! &#8212; sim-core-0.1  documentation</title>
-    <link rel="stylesheet" href="_static/groundwork.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/groundwork.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -24,7 +25,8 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">sim-core-0.1  documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">sim-core-0.1  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Welcome to sim-core-0.1’s documentation!</a></li> 
       </ul>
     </div>  
 
@@ -152,9 +154,9 @@ Provides:</p>
 <li><p>default number of nodes m = 3</p></li>
 <li><p>nodes generation accoding to self.m and:</p></li>
 <li><p>default self.stake_f, used to generate intial stake distrib.</p></li>
-<li><p>self.r reward function $r(n)$ constant at self.R/T, this is
-labeled “R/T”</p></li>
 </ul>
+<p>Reward function <cite>type(self).r</cite> and selection mechanism <cite>self.select_proposer</cite> should still be implemented
+by extensions of this class</p>
 <dl class="py method">
 <dt id="sim.core.sim_0.Simulation.dict">
 <code class="sig-name descname">dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.sim_0.Simulation.dict" title="Permalink to this definition">¶</a></dt>
@@ -164,15 +166,8 @@ labeled “R/T”</p></li>
 <dl class="py method">
 <dt id="sim.core.sim_0.Simulation.give_reward">
 <code class="sig-name descname">give_reward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.sim_0.Simulation.give_reward" title="Permalink to this definition">¶</a></dt>
-<dd><p>uses self.r (reward function) to emit reward for
-the current epoc to the given node instance.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="sim.core.sim_0.Simulation.select_proposer">
-<code class="sig-name descname">select_proposer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.sim_0.Simulation.select_proposer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Basic block proposer selection:
-Choose only 1 node with a prob. eq. to their fractional stake</p>
+<dd><p>uses type(self).r (reward function) to emit reward for
+the current epoch to the given node instance.</p>
 </dd></dl>
 
 </dd></dl>
@@ -261,6 +256,13 @@ perform the actual extension at the class level</p>
 <em class="property">class </em><code class="sig-prename descclassname">sim.core.implem.</code><code class="sig-name descname">ConstSim</code><span class="sig-paren">(</span><em class="sig-param">T=100</em>, <em class="sig-param">m=3</em>, <em class="sig-param">R=100</em>, <em class="sig-param">stake_f=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.ConstSim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constant reward, linear selection simulation.
 Just a placeholder, this is simply the default for Simulation</p>
+<dl class="py method">
+<dt id="sim.core.implem.ConstSim.select_proposer">
+<code class="sig-name descname">select_proposer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.ConstSim.select_proposer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic block proposer selection:
+Choose only 1 node with a prob. eq. to their fractional stake</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -276,6 +278,13 @@ parameters, and ‘t’.</p>
 <p>Suitable params dictionary is obtained by invoking .params() on a
 simulaion instance</p>
 <p>(1+R)^(t/T) - (1+R)^((t-1)/T)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sim.core.implem.GeomSim.select_proposer">
+<code class="sig-name descname">select_proposer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.GeomSim.select_proposer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic block proposer selection:
+Choose only 1 node with a prob. eq. to their fractional stake</p>
 </dd></dl>
 
 </dd></dl>
@@ -328,6 +337,31 @@ by log(1 + x).</p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="sim.core.implem.RandomGeomSim">
+<em class="property">class </em><code class="sig-prename descclassname">sim.core.implem.</code><code class="sig-name descname">RandomGeomSim</code><span class="sig-paren">(</span><em class="sig-param">T=100</em>, <em class="sig-param">m=3</em>, <em class="sig-param">R=100</em>, <em class="sig-param">stake_f=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.RandomGeomSim" title="Permalink to this definition">¶</a></dt>
+<dd><p>RadomSim extends the normal simulation with random proposer selection.
+Used for control/refernce condition</p>
+<dl class="py method">
+<dt id="sim.core.implem.RandomGeomSim.r">
+<code class="sig-name descname">r</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.RandomGeomSim.r" title="Permalink to this definition">¶</a></dt>
+<dd><p>Geometric reward function.</p>
+<p>accepts a dictionary specifying required
+parameters, and ‘t’.</p>
+<p>Suitable params dictionary is obtained by invoking .params() on a
+simulaion instance</p>
+<p>(1+R)^(t/T) - (1+R)^((t-1)/T)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sim.core.implem.RandomGeomSim.select_proposer">
+<code class="sig-name descname">select_proposer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.RandomGeomSim.select_proposer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overrides selection procedure to sample nodes
+randomly with eqaul probability</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="sim.core.implem.RandomSim">
 <em class="property">class </em><code class="sig-prename descclassname">sim.core.implem.</code><code class="sig-name descname">RandomSim</code><span class="sig-paren">(</span><em class="sig-param">T=100</em>, <em class="sig-param">m=3</em>, <em class="sig-param">R=100</em>, <em class="sig-param">stake_f=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.RandomSim" title="Permalink to this definition">¶</a></dt>
 <dd><p>RadomSim extends the normal simulation with random proposer selection.
@@ -339,35 +373,6 @@ Used for control/refernce condition</p>
 randomly with eqaul probability</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py function">
-<dt id="sim.core.implem.log_proposer_selection">
-<code class="sig-prename descclassname">sim.core.implem.</code><code class="sig-name descname">log_proposer_selection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.log_proposer_selection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Implementation of the logarithmic proposer selection function.
-Note that the base of the log is irrelavant since the vector
-of logs will be normalized.</p>
-<p>Uses random.choices with weights vector determined
-by log(1 + x).</p>
-<p>Returns a single node as result.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="sim.core.implem.r_g">
-<code class="sig-prename descclassname">sim.core.implem.</code><code class="sig-name descname">r_g</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.r_g" title="Permalink to this definition">¶</a></dt>
-<dd><p>Geometric reward function.</p>
-<p>accepts a dictionary specifying required
-parameters, and ‘t’.</p>
-<p>Suitable params dictionary is obtained by invoking .params() on a
-simulaion instance</p>
-<p>(1+R)^(t/T) - (1+R)^((t-1)/T)</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="sim.core.implem.random_proposer_selection">
-<code class="sig-prename descclassname">sim.core.implem.</code><code class="sig-name descname">random_proposer_selection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.implem.random_proposer_selection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Overrides selection procedure to sample nodes
-randomly with eqaul probability</p>
 </dd></dl>
 
 </div>
@@ -417,7 +422,7 @@ current cached values</p>
 
 <dl class="py function">
 <dt id="sim.core.boot_exp.boot_exp">
-<code class="sig-prename descclassname">sim.core.boot_exp.</code><code class="sig-name descname">boot_exp</code><span class="sig-paren">(</span><em class="sig-param">params</em>, <em class="sig-param">out_fn=&lt;built-in method write of _io.TextIOWrapper object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.boot_exp.boot_exp" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">sim.core.boot_exp.</code><code class="sig-name descname">boot_exp</code><span class="sig-paren">(</span><em class="sig-param">params</em>, <em class="sig-param">out_fn=&lt;built-in method write of _io.TextIOWrapper object&gt;</em>, <em class="sig-param">header=True</em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.boot_exp.boot_exp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bootstrap experiment, builds a simulation forawrding kwargs in
 params to the appropriate Simulation extension constructor.</p>
 <p>The simulation is repeated <cite>times</cite> times, and dumps stats produced
@@ -453,7 +458,7 @@ uses <cite>run</cite> to execute the batch and prints the results to stdandard o
 
 <dl class="py function">
 <dt id="sim.core.main.run">
-<code class="sig-prename descclassname">sim.core.main.</code><code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">args_dict</em>, <em class="sig-param">out_fn=&lt;built-in method write of _io.TextIOWrapper object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.main.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">sim.core.main.</code><code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">args_dict</em>, <em class="sig-param">out_fn=&lt;built-in method write of _io.TextIOWrapper object&gt;</em>, <em class="sig-param">header=True</em><span class="sig-paren">)</span><a class="headerlink" href="#sim.core.main.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run a full simulation for parameters in args_dict.
 if not provided out_fn defaults to writing to stdout.
 The value of args_dict[‘R’] will be computed as c*T.</p>
@@ -614,6 +619,7 @@ include the ctx object passed.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -679,12 +685,13 @@ include the ctx object passed.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">sim-core-0.1  documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">sim-core-0.1  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Welcome to sim-core-0.1’s documentation!</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, bandoos.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
     </div>
   </body>
 </html>
