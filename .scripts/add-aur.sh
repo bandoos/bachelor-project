@@ -38,7 +38,7 @@ sed -i "s,PKGEXT='.pkg.tar.xz',PKGEXT='.pkg.tar',g" /etc/makepkg.conf
 su $AUR_USER -c 'cd; git clone https://aur.archlinux.org/yay.git'
 su $AUR_USER -c 'cd; cd yay; makepkg'
 pushd /home/$AUR_USER/yay/
-pacman -U *.pkg.tar --noprogressbar --noconfirm
+pacman -U *.pkg.tar.zst --noprogressbar --noconfirm
 popd
 rm -rf /home/$AUR_USER/yay
 

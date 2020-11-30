@@ -17,6 +17,12 @@
     which will work on GNU/linux, OSX and windows. See the
     *Docker mode* section for instructions.
 
+    *NOTE* about using virtualenv
+    :START:
+    TODO
+    :END:
+
+
 
     The code is bundled as a python package so,
     from the root folder of the project run:
@@ -329,9 +335,191 @@ required arguments:
 
 * Docker mode
    <<sec:dockermode>>
-   ...
+
+   If not already present on your system install docker:
+   [[https://docs.docker.com/get-docker/]]
+
+   On linux you may want to use your usual package manager.
+   On linux, after installation, you need to add your user
+   to the =docker= group to be able to run docker images
+   without root privileges. (This is strongly encouraged
+   rather than using sudo!!)
+
+   ~# usermod --append -G docker <your-user>~
+
+   On macos and windows (using the desktop version of docker)
+   the docker-compose utility ships by default.
+   On linux you will have to install it separately:
+   https://docs.docker.com/compose/install/
 
 
+   It quiet intuitively allows to compose docker images/containers.
+
+
+** Ensuring docker installation
+
+   Test the docker installation
+
+   ~$ docker run --rm hello-world~
+
+   This can take a while the first time, but it should
+   then produce some useful information about docker and exit.
+
+** Installing the project's image
+
+   The docker image for this project ships with
+   a fully functional archlinux system with all
+   the necessary requirements installed plus some
+   packages and tweaks to make the experience pleasant
+   like tab-completion on the project's commands.
+
+   Using a pre-built image is suggested; download it from =TODO=
+   The compressed image is about 1 GB.
+
+   once downloaded load it to the docker engine with
+
+   ~$ docker load < pos-sim-core-latest.tar.gz~
+
+** Launch the system
+
+   Once the image is successfully loaded enter
+   the =$PROJECT_ROOT/compose= folder and run:
+
+   ~$ docker-compose up~
+
+   This will start the container and mount the
+   =$PROJECT_ROOT/compose/data= directory to the container's
+   =~/data= dir. This location can be used as a (persitent) bridge
+   between your system and the container.
+
+   The above command will hang until you decide to
+   stop it, when so hit CTRL-C to send the shutdown signal,
+   the system will process it and shutdown gracefully.
+
+   Note this is named container so only one instance at a time
+   can run, that is more than sufficient to run many simulations
+   in parallel within the container though!
+
+** Start a session
+
+   You can start a terminal session within the running system
+   (from another terminal) with
+
+   ~$ docker exec -it pos-sim-core /bin/zsh~
+
+   This will open a terminal within the container.
+
+   Inside you find a copy of =$PROJECT_ROOT=.
+
+   All of the project commands are in the =$PATH= there
+   so they can be called directly. If in doubt you can list them
+   with =$ ls ~/.scripts=
+
+
+
+
+
+
+
+
+
+
+
+* Project structure
+
+  #+begin_src  text
+.
+├── build
+│   │  
+│   └── html
+│       ├── ... documentation html files
+│  
+├── compose
+│   ├── data
+│   │   ├─ ... data folder for docker
+│   │  
+│   ├── docker-compose.yml
+│   ├── vars.env
+│   └── vars.wan.env
+├── Dockerfile
+├── Makefile
+├── notebooks
+│   └── Untitled.ipynb
+├── pipinstalls.txt
+├── PKG-INFO
+├── README.html
+├── README.org
+├── setup.cfg
+├── setup.py
+├── sim
+│   ├── cmd
+│   │   └ ucmd.py
+│   ├── core
+│   │   ├── abstract_sim.py
+│   │   ├── base_object.py
+│   │   ├── boot_exp.py
+│   │   ├── decorators.py
+│   │   ├── ecdf.py
+│   │   ├── implem.py
+│   │   ├── __init__.py
+│   │   ├── main.py
+│   │   ├── node.py
+│   │   ├── parser.py
+│   │   ├── plot.py
+│   │   ├── rew_f.py
+│   │   ├── sel_f.py
+│   │   ├── sim_0.py
+│   │   ├── stake_f.py
+│   │   └── utils.py
+│   ├── executor
+│   │   ├── batch
+│   │   │   └──  ibatch.py
+│   │   ├── celeryconf.py
+│   │   ├── db
+│   │   │   ├── cmd.py
+│   │   │   ├── fs.py
+│   │   │   ├── logger.py
+│   │   │   └──  parser.py
+│   │   │  
+│   │   ├── dbdriver.py
+│   │   ├── experiments
+│   │   │   ├── exp_01.py
+│   │   │   ├── exp_0.py
+│   │   │   ├── exp_365.py
+│   │   │   ├── exp_const_geom_pt2.py
+│   │   │   ├── exp_const_geom.py
+│   │   │   ├── exp_log.py
+│   │   │   └── foo.py
+│   │   │  
+│   │   ├── launcher.py
+│   │   ├── logger.py
+│   │   ├── tasks.py
+│   │   └── test
+│   │       └── ctx.py
+│   └── parser
+│       └── aparse.py
+│  
+├── sim.core.egg-info
+│   ├── dependency_links.txt
+│   ├── entry_points.txt
+│   ├── PKG-INFO
+│   ├── SOURCES.txt
+│   └── top_level.txt
+├── sim.egg-info
+│   ├── dependency_links.txt
+│   ├── entry_points.txt
+│   ├── PKG-INFO
+│   ├── requires.txt
+│   ├── SOURCES.txt
+│   └── top_level.txt
+├── source
+│   ├── conf.py
+│   ├── index.rst
+│   └── _static
+└── todo.org
+#+end_src
+
+** Locs
 
 |-----------------------------+-------+-------+-------+---------+------|
 | Language                    | Files | Lines | Blank | Comment | Code |
