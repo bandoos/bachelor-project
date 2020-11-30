@@ -1,0 +1,293 @@
+#+TITLE: sim-core-0.1 README
+
+* Standard mode
+** Installation
+
+    This section applies for GNU/linux systems.
+    It should also work on OSX (mac) if a python (>3) and
+    pip are installed.
+
+   Download the .zip folder of the project to a location
+   we will refer to as =$PROJECT_ROOT=
+
+    The alternative is using the provided Docker image,
+    which will work on GNU/linux, OSX and windows. See the
+    *Docker mode* section for instructions.
+
+
+    The code is bundled as a python package so,
+    from the root folder of the project run:
+
+     ~$ pip install --user -e ./~
+
+     This will use ~pip~ to install (for the current user)
+     the dependencies of the project from PyPI, and add this project
+     to the =$PYTHONPATH= so it can be executed on your system.
+
+     Thought this is not necessary for the basic functionality
+     some features rely on =$HOME/.local/bin= to be in the =$PATH=.
+     This is typically the case with standard linux distribution,
+     but the install command will warn if this is not the case
+     for you.
+
+     If =.local/bin= is in your =$PATH= then the main entry point
+     for the simulation executable is available as:
+
+     ~$ sim-stake [OPTIONS]~
+
+
+     If =.local/bin= is not in your $PATH then from the =$PROJECT_ROOT=
+     run:
+
+     ~.scripts/sim-stake [OPTIONS]~.
+
+     In that case remember that you should always be in =$PROJECT_ROOT=
+     and substitute ~sim-stake~ with ~.scripts/sim-stake~ in the following sections.
+
+
+** Usage
+     You can see its usage information with:
+
+     ~$ sim-stake --help~
+
+     #+begin_src text
+usage: sim-stake [-h] [--id ID]
+                 --m M --T T
+                 --c C --times TIMES
+                 --stake_f {eq,beta,pareto}
+		 --sim {random,const,geom,log_const,log_geom}
+
+Run a sim-stake-batch
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --id ID               unique id for the experiment
+
+required arguments:
+  --m M                 INTEGER: Indicate the number of nodes [m] (valid if >= 2)
+  --T T                 INTEGER: Indicate max epoch time [T] (valid if >= 2)
+  --c C                 FLOAT: Indicate total load factor "c" [R=cT] (valid if > 0)
+  --times TIMES         INTEGER: Redudancy factor (valid if > 0)
+  --stake_f {eq,beta,pareto} STRING: Generator function for inital stake distrib.
+  --sim {random,const,geom,log_const,log_geom} STRING: Indicate simulator class
+     #+end_src
+
+     So the program requires a flag for each simulation parameter,
+     plus an optional id argument. The id argument is not necessary for
+     basic usage, and i suggest using the docker setup for batch execution
+     anyways (which manages experiment ids independently)
+     so it may be removed in subsequent releases.
+
+** Test the installation
+
+     An example of well formed command would be:
+
+     ~$ sim-stake --m 3 --T 200 --c 0.5 --stake_f eq --sim random --times 10~
+
+     Which would run the simulation with:
+     - $m=3$ nodes
+     - for $T=200$ epochs,
+     - with a load factor $c=0.5$
+     - initial stake $stake_f=eq$
+     - $sim=random$ scheme,
+     - repeating the experiment 10 times ($times=10$)
+
+     A csv is produced on standard output which looks like:
+
+     #+begin_src text
+     m,T,c,R,sim,stake_f,var_0,var_T,gini_0,gini_T,under_target,avg_loss,over_target,avg_gain
+     3,200,0.4,80.0,random,eq,0.0,0.0001354807,0.0,0.0164609053,0.6666666667,-0.0082304527,0.3333333333,0.0164609053
+     3,200,0.4,80.0,random,eq,0.0,0.0013222917,0.0,0.0592592593,0.6666666667,-0.0230452675,0.3333333333,0.046090535
+     3,200,0.4,80.0,random,eq,0.0,0.0007207573,0.0,0.0427983539,0.6666666667,-0.0181069959,0.3333333333,0.0362139918
+     3,200,0.4,80.0,random,eq,0.0,0.0008833342,0.0,0.046090535,0.6666666667,-0.0205761317,0.3333333333,0.0411522634
+     3,200,0.4,80.0,random,eq,0.0,0.0006557266,0.0,0.0362139918,0.6666666667,-0.0181069959,0.3333333333,0.0362139918
+     3,200,0.4,80.0,random,eq,0.0,0.0008508188,0.0,0.0427983539,0.6666666667,-0.0205761317,0.3333333333,0.0411522634
+     3,200,0.4,80.0,random,eq,0.0,5.4192e-06,0.0,0.0032921811,0.3333333333,-0.0032921811,0.6666666667,0.0016460905
+     3,200,0.4,80.0,random,eq,0.0,0.0003305729,0.0,0.0296296296,0.3333333333,-0.0230452675,0.6666666667,0.0115226337
+     3,200,0.4,80.0,random,eq,0.0,0.0002655422,0.0,0.0263374486,0.6666666667,-0.0106995885,0.3333333333,0.021399177
+     3,200,0.4,80.0,random,eq,0.0,0.0005581805,0.0,0.0362139918,0.3333333333,-0.0329218107,0.6666666667,0.0164609053
+     #+end_src
+
+     All simulation parameters are reported for each row along with
+     the observed result metrics, so that each result is fully characterized
+     by its csv output (i.e. 2 outputs can merged in a single dataframe without loss
+     of information)
+
+     Use output redirection to save the results to a file for later inspection:
+
+     ~$ sim-stake --m 3 --T 200 --c 0.5 --stake_f eq --sim random --times 10 > some_name.csv~
+
+*** NOTE
+    Running the simulation as saw above works for simple tests
+    with a single parameters combination.
+    For a full fledged experiment with parameter manipulation see either
+    section [[sec:usingaslib]] (using as library) or section [[sec:dockermode]] (docker mode).
+
+** Using as library
+   <<sec:usingaslib>>
+
+   Once installed the code can also be used as library.
+   In the module *sim.core.main* exposes a =run= function
+   that accepts the parameters you would provide on the command line
+   as a dictionary (without the =--= prefix on parameters name).
+
+   In a python script of your choice:
+
+   #+begin_src python
+   import sim.core.main as simulation
+
+   params = {'m':3,
+             'T':300,
+	     'c':0.5,
+             'stake_f':'eq',
+             'sim':'random',
+	     'times':10}
+
+   simulation.run(params)
+   #+end_src
+
+   The run function accepts 2 other optional named parameters:
+   - =out_fn= (default = sys.stdout.write)
+   - =header= (default = True)
+
+   The =out_fn= will be called for each simulation repetition
+   passing a string being the comma separated values (parameter + response metrics)
+   i.e. =times= times once per line of the output csv.
+
+   The =header= boolean controls whether the header of the csv should be produced
+   before the first run results.
+
+*** Simple experiment
+
+    A simple experiment can be conducted by writing a procedure
+    that runs several simulations:
+
+    Let's say we want to manipulate the number of nodes $m$:
+
+   #+begin_src python
+   import sim.core.main as simulation
+
+   ms = range(2,10)
+
+   params = {'m':None,
+             'T':300,
+	     'c':0.5,
+             'stake_f':'eq',
+             'sim':'random',
+	     'times':10}
+
+   header = True
+   for m in ms:
+       params['m'] = m
+       simulation.run(params,header=header)
+       if header:
+           header=False
+   #+end_src
+
+   Note that we ensure that the header is only produced
+   on the first parameter combination so we get a valid csv
+   as output.
+
+*** Experiment definition grammar
+
+    Although the above is sufficient for simple experiments,
+    relying on procedural code may hide the essence of the
+    experiment in complex scenario, rendering difficult to infer what
+    is tested. A more declarative approach ensured readability and clarity.
+
+    In order to define experiment in a pleasant way a module
+    was defined to provide a definition grammar for complex experiments.
+
+    The fundamental idea is providing a callable data structure that
+    represents the Cartesian product of named sets. Once called the ds
+    will expand to a list of dictionaries where each key assumes one of the
+    values of its set.
+
+    The ~sim.executor.batch.ibatch~ module provides the constructor ~P~
+    for these Cartesian expansions.
+
+    #+begin_src python
+    from pprint import pprint
+    from sim.executor.batch.ibatch import P
+
+    p1 = P({'a':{True,False},
+            'b':{True,False}})
+
+    pprint(p1())
+    #+end_src
+
+    Which produces the following output:
+
+    #+begin_src python
+    [{'a': True, 'b': True},
+     {'a': True, 'b': False},
+     {'a': False, 'b': True},
+     {'a': False, 'b': False}]
+    #+end_src
+
+    Typically the values of the dictionary provided to the P constructor
+    will be sets (thus ensuring no duplicates) but any iterable or callable
+    that returns an iterable is fine, so the following is acceptable:
+
+    #+begin_src python
+    from pprint import pprint
+    from sim.executor.batch.ibatch import P
+
+    def i_could_be_a_very_complex_function():
+        "...complex compute..."
+	return {True,False}
+
+    p2 = P({'n': range(1,4),
+            'b': i_could_be_a_very_complex_function})
+
+    pprint(p2())
+    #+end_src
+
+    Which produces:
+
+    #+begin_src python
+    [{'b': False, 'n': 1},
+     {'b': True, 'n': 1},
+     {'b': False, 'n': 2},
+     {'b': True, 'n': 2},
+     {'b': False, 'n': 3},
+     {'b': True, 'n': 3}]
+    #+end_src
+
+    If we only desire a segments of the product (i.e. some value should only
+    be matched with specific ones) then chaining 2 separate P constructor
+    suffices. To chain constructors just use the =+= operator:
+
+    #+begin_src python
+    from pprint import pprint
+    from sim.executor.batch.ibatch import P
+
+    p3 = P({'mode': {"a"},
+            'sub_mode': {"a1","a2"}})
+
+    p4 = P({'mode': {"b"},
+            'sub_mode':{"b1","b2"}})
+
+    p5 = p3 + p4
+
+    pprint(p5())
+    #+end_src
+
+    #+begin_src python
+    [{'mode': 'a', 'sub_mode': 'a1'},
+     {'mode': 'a', 'sub_mode': 'a2'},
+     {'mode': 'b', 'sub_mode': 'b1'},
+     {'mode': 'b', 'sub_mode': 'b2'}]
+    #+end_src
+
+
+
+
+
+
+
+
+
+* Docker mode
+   <<sec:dockermode>>
+   ...

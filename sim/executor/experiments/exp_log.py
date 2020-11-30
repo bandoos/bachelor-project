@@ -20,9 +20,7 @@ batch = \
     P({'m':  [10 ** i for i in range(1,4)],
        'T':  [10 ** i for i in range(2,4)],
        'c':  [0.001, 0.01, 0.1, 0.5, 1, 2, 10, 100],
-       'sim':        ['random',
-                      'const','geom',
-                      'log_const','log_geom'],
+       'sim':        ['log_const','log_geom'],
        'stake_f':    ['eq','beta','pareto'],
        'times':      [REPETITIONS],
        'redundancy': REDUNDANCY })
@@ -35,5 +33,7 @@ if __name__ == "__main__":
     pprint.pprint({'lenght':len(_batch),
                    'body':batch.dic})
 
-## Batch id
-## 1dd1d11f-0255-44ac-b7cf-cd3401c92095
+# {'aggregator-output': '5ef9f05ae429a13c0fb3579a',
+#  'batch_uuid': '73cf0409-41d9-4a5a-a86e-5c997b27a1e1',
+#  'job-exit': 0,
+#  'stage': 'post_proc_batch_v2'}

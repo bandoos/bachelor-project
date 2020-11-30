@@ -23,7 +23,9 @@ from sim.core.boot_exp import boot_exp
 
 # * Main function
 
-def run(args_dict,out_fn=sys.stdout.write):
+def run(args_dict,
+        out_fn=sys.stdout.write,
+        header=True):
     """Run a full simulation for parameters in args_dict.
     if not provided out_fn defaults to writing to stdout.
     The value of args_dict['R'] will be computed as c*T.
@@ -34,8 +36,9 @@ def run(args_dict,out_fn=sys.stdout.write):
     of main which reads args from argv
 
     """
+    # print(args_dict)
     args_dict['R'] = args_dict['c'] * float(args_dict['T'])
-    boot_exp (args_dict,out_fn)
+    boot_exp (args_dict,out_fn=out_fn,header=header)
 
 def main ():
     """

@@ -5,12 +5,12 @@ from sim.executor.batch.ibatch import *
 # each combination of params is repeated
 # REPETITIONS times per simulaion (i.e. within the same PID)
 
-REPETITIONS=50
+REPETITIONS=1
 
 # an additional multiplier called REDUNDANCY
 # controls external redundancy (i.e. with a different PID, possibly in parallel)
 
-REDN_N=2
+REDN_N=1
 REDUNDANCY=range(REDN_N)
 
 # This yields a total of REPETITIONS * REDN_N simulations
@@ -20,9 +20,7 @@ batch = \
     P({'m':  [10 ** i for i in range(1,4)],
        'T':  [10 ** i for i in range(2,4)],
        'c':  [0.001, 0.01, 0.1, 0.5, 1, 2, 10, 100],
-       'sim':        ['random',
-                      'const','geom',
-                      'log_const','log_geom'],
+       'sim':        ['const','geom','log_const','log_geom','random'],
        'stake_f':    ['eq','beta','pareto'],
        'times':      [REPETITIONS],
        'redundancy': REDUNDANCY })
@@ -34,6 +32,3 @@ if __name__ == "__main__":
 
     pprint.pprint({'lenght':len(_batch),
                    'body':batch.dic})
-
-## Batch id
-## 1dd1d11f-0255-44ac-b7cf-cd3401c92095

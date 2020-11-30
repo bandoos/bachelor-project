@@ -66,7 +66,7 @@ def do_expand(x):
 
 @d.dataclass
 class Li():
-    """ Vs will not expand, its children"""
+    """ List constructor that will expand its elements.  """
     vs : list
 
     def __call__(self,env={}):

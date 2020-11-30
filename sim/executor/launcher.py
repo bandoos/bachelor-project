@@ -156,7 +156,7 @@ def run(args_dict):
 
     except NotCallableError:
         logger.error(f"{module_name}.batch is not expandable!\n"
-                     f"check that {module_name}.batch is either callable")
+                     f"check that {module_name}.batch is callable or iterable")
         sys.exit(3)
 
 

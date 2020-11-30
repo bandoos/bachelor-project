@@ -84,11 +84,17 @@ class EpisodeStats():
         over = [n for n in sim.nodes # who was favored by the process
                 if n.v(sim.s) > n.stake_0]
 
-        v_loss = np.array([n.v(sim.s) - n.stake_0 for n in under])
-        self.avg_loss = np.mean(v_loss)
+        if len(under) > 0:
+            v_loss = np.array([n.v(sim.s) - n.stake_0 for n in under])
+            self.avg_loss = np.mean(v_loss)
+        else:
+            self.avg_loss = 0
 
-        v_gain = np.array([n.v(sim.s) - n.stake_0 for n in over])
-        self.avg_gain = np.mean(v_gain)
+        if len(over) > 0:
+            v_gain = np.array([n.v(sim.s) - n.stake_0 for n in over])
+            self.avg_gain = np.mean(v_gain)
+        else:
+            self.avg_gain = 0
 
         self.under_target =  len(under)/len(sim.nodes)
         self.over_target  = len(over)/len(sim.nodes)
@@ -110,7 +116,9 @@ def fill_in_fns (ps):
 
 
 @unverbosed
-def boot_exp(params,out_fn=sys.stdout.write):
+def boot_exp(params,
+             out_fn=sys.stdout.write,
+             header=True):
     """Bootstrap experiment, builds a simulation forawrding kwargs in
     params to the appropriate Simulation extension constructor.
 
@@ -125,7 +133,8 @@ def boot_exp(params,out_fn=sys.stdout.write):
     _class = psf ['sim']
 
     stats = EpisodeStats(params) # init. aggregator
-    out_fn(EpisodeStats.header)  # dump header
+    if header:
+        out_fn(EpisodeStats.header)  # dump header
 
     for i in range(times): # repeat the simulaion
         sim = _class(**psf) # build and run sim
