@@ -48,9 +48,7 @@ db['celery_taskmeta'].find_one()
 coll = db['mona']
 coll.insert_one({'mona':"ti"})
 
-
 c.close()
-
 """
 
 
@@ -65,9 +63,6 @@ produces an header, the remaning ones produce rows.
 
 It can buffer updates if the output is produced at a rate not suitable
 for db updates
-
-
-
 """
 
 
@@ -89,11 +84,6 @@ class DBDriver(object):
 
     def __repr__(self):
         return f'<{type(self)}: {pp.pformat(self.__dict__)}>'
-
-    # def __getattribute__(self,x):
-    #     return self.c[x]
-
-
 
 
 TASK_DB = os.environ.get('EXECUTOR_DB') or "from_celery"
@@ -311,10 +301,8 @@ tagg()
 
 """
 
-
 class HeaderMismatchError(Exception):
     pass
-
 
 class CsvAggregator(TaskAggregator):
     """A stateful aggregator that merges csv formatted
@@ -346,7 +334,6 @@ class CsvAggregator(TaskAggregator):
         self.fptr = open(self.tmp_path, 'w')
         self.out_fn = out_fn or self.fptr.write
         self.gfs = gridfs.GridFS(self.c[GRIDFS_DB])
-
 
     #def _upload_file(self):
 
@@ -387,8 +374,6 @@ class CsvAggregator(TaskAggregator):
             fileid= self.gfs.put(fptr,filename=self.filename)
             print (f"Successfully loaded {self.filename} to GridFS")
             return fileid
-
-
 
 # with CsvAggregator("efb24fa2-dd72-4147-89db-2cd6ec2e8d52") as agg:
 #     agg()

@@ -18,8 +18,36 @@
     *Docker mode* section for instructions.
 
     *NOTE* about using virtualenv
+
     :START:
-    TODO
+    Using virtualenv to avoid python libraries versions
+    conflicts is encouraged.
+
+    if virtualenv is not installed on your system yet
+    it can be installed with pip
+
+    ~$ pip install --user virtualenv~
+
+    check installation
+
+    ~$ virtualenv --version~
+
+    create an env directory
+
+    #+begin_src
+    $ mkdir sim-core-env
+    $ cd sim-core-env
+    $ virtualenv venv
+    #+end_src
+
+    then from sim-core-env activate the environment
+
+    ~$ source ./venv/bin/activate~
+
+    The terminal prompt should now display the name of the environment
+    to signal it is active.
+
+
     :END:
 
 
@@ -38,6 +66,10 @@
      This is typically the case with standard linux distribution,
      but the install command will warn if this is not the case
      for you.
+
+     If using virtualenv once the environment is activated the =$PATH=
+     is manipulated appropriately automatically.
+
 
      If =.local/bin= is in your =$PATH= then the main entry point
      for the simulation executable is available as:
@@ -201,8 +233,8 @@ required arguments:
 
     Although the above is sufficient for simple experiments,
     relying on procedural code may hide the essence of the
-    experiment in complex scenario, rendering difficult to infer what
-    is tested. A more declarative approach ensured readability and clarity.
+    experiment in complex scenarios, rendering difficult to infer what
+    is tested. A more declarative approach ensures readability and clarity.
 
     In order to define experiment in a pleasant way a module
     was defined to provide a definition grammar for complex experiments.
@@ -381,7 +413,7 @@ required arguments:
    ~$ docker load < pos-sim-core-latest.tar.gz~
 
 ** Launch the system
-
+   <<sec:launch>>
    Once the image is successfully loaded enter
    the =$PROJECT_ROOT/compose= folder and run:
 
@@ -401,7 +433,7 @@ required arguments:
    in parallel within the container though!
 
 ** Start a session
-
+   <<sec:session>>
    You can start a terminal session within the running system
    (from another terminal) with
 
@@ -420,6 +452,86 @@ required arguments:
 
 
 
+
+
+
+
+
+
+
+* Multiprocess distributed execution
+
+  To allow for large scale simulations facilities are provided
+  to run multiple simulations in parallel on multiple machines
+  thanks to Celery (v4.4.3) https://docs.celeryproject.org/en/4.4.3/getting-started/resources.html
+  coordinated by Redis [[https://redis.io/]] and storing results on
+  Mongodb [[https://www.mongodb.com/]].
+
+  While a setup without docker in for this use case is possible
+  it involves installing the project, mongodb and redis to your system,
+  and since the purpose of this facility is to deploy easily on several
+  possibly heterogeneous systems the easiest and more reliable solution
+  is to just have a docker engine on each machine and rely on the provided
+  images.
+
+  Note that no knowledge about redis or mongodb is required
+  to carry out the experiments as utilities are provided
+  for the necessary interactions.
+
+** Coordination
+
+   On one machine the *sim-coordinator* system should be run.
+   Assuming docker and docker-compose are available on the machine
+   simply enter =$PROJECT_ROOT/sim-coordinator= and run
+
+   ~$ docker-compose up~
+
+   This will start the database and redis instances
+   on predefined ports (see section [[sec:distrib-config]] if you want to
+   change the port numbers for any reason.)
+
+   the above command will hang until CTRL-C is pressed
+   which will start the graceful shutdown.
+
+   The workers running the project's code will
+   receive jobs to execute from redis and produce
+   results to the database.
+
+   Inside of =$PROJECT_ROOT/sim-coordinator= 2 folders are present:
+   - =$PROJECT_ROOT/sim-coordinator/mongo-volume=
+   - =$PROJECT_ROOT/sim-coordinator/reids-data=
+
+   Similarly to =$PROJECT_ROOT/sim-coordinator/compose/data=
+   these act as bridges with your host system.
+   The database will persist the data the *mongo-volume* dir
+   and redis (which by default is not persistent) will do so in the
+   *redis-data* dir  if configure to be persistent.
+
+   No further actions need to be taken with regard to the coordination
+   system.
+
+** Workers
+
+   On each machine that should be targeted by the job
+   distribution mechanism follow sections [[sec:launch]] and [[sec:session]]
+   to boot the worker environment.
+
+   Once you have a session terminal ensure that the system configuration
+   is correct for your needs (see section [[sec:distrib-config]]), and then
+   simply run:
+
+   ~$ run-worker~
+
+   to have the machine join the distributed system. This will hang until
+   you hit CTRL-C, and will print information about the system and then log
+   events.
+
+** Launcher
+
+
+
+** Configuring the distributed system
+   <<sec:distrib-config>>
 
 
 

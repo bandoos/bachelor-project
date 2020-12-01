@@ -1,3 +1,0 @@
-[setuptools.installation]
-eggsecutable = sim.core.main:main
-

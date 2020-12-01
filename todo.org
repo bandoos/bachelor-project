@@ -1,2 +1,8 @@
 * Docker deployment
   - ensure sim.executor.celeryconf uses ENV VARS
+
+* DONE embed coorinator in main repo
+* structure
+	- veryfiy that egg* folders can be removed!
+
+
