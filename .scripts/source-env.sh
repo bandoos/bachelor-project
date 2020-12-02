@@ -1,3 +1,8 @@
 #!/usr/bin/env bash
 
-export $(grep -v '^#' compose/vars.env | xargs)
+FILE=$1
+[[ -z $1 ]] && export FILE=compose/vars.env
+
+echo 'loading env vars from: ' $FILE
+
+export $(grep -v '^#' $FILE | xargs)

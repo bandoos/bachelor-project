@@ -177,6 +177,7 @@ if __name__ == "__main__":
 
 
 
+
 # * thinkering
 
 
@@ -190,3 +191,5 @@ if __name__ == "__main__":
 #     for j in parent.results:
 #         # r = AsyncResult(j)
 #         print(j.__dict__)
+#
+#

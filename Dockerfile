@@ -58,9 +58,9 @@ RUN .scripts/install.sh
 # db for results filesystem
 ENV EXECUTOR_GRIDFS='executor-gridfs'
 # database uri
-ENV MONGODB_URI='mongodb://localhost:27020'
+ENV MONGODB_URI='mongodb://0.0.0.0:27020'
 # key value store / message broker
-ENV REDIS_URI='redis://localhost:6399'
+ENV REDIS_URI='redis://0.0.0.0:6399'
 
 # ** link scripts
 RUN chmod +x $HOME/.scripts/*
@@ -71,5 +71,37 @@ RUN echo 'autoload -U bashcompinit && bashcompinit' >> .zshrc
 RUN echo 'eval "$(register-python-argcomplete sim-stake)"' >> .zshrc
 RUN echo 'eval "$(register-python-argcomplete sim-launcher)"' >> .zshrc
 RUN echo 'eval "$(register-python-argcomplete dctl)"' >> .zshrc
+RUN echo 'figlet -f slant pos-sim-core' >> .zshrc
+RUN echo "echo '
+Welcome to pos-sim-core docker environment.
+
+If you see this message you have just started a new session.
+
+Run
+
+$ python -m sim.executor.config-doctor
+
+to see if this instance is correctly configured and
+ready to join the distributed system.
+
+Use
+
+$ run-worker
+
+to have this machine run a worker node.
+
+Use
+
+$ launch-flower
+
+to start monitoring the system from this machine.
+
+Use the \"dctl\" program to fetch result files
+
+(See project readme for complete instructions)
+
+'"
+
+
 
 CMD '/bin/zsh'

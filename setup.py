@@ -2,6 +2,11 @@ from setuptools import setup, find_namespace_packages
 setup(
     name="sim",
     version="0.1",
+    summary="""
+    Bachelor Project software, Inequality in Proof-of-stake Schemes: A simulation study.
+    """,
+    author='Luca Bandelli',
+    author_email='l.bandelli@student.rug.nl',
     packages=find_namespace_packages(include=['sim.*']),
     entry_points={
         'setuptools.installation': [

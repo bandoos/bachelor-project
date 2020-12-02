@@ -1,6 +1,8 @@
 #+TITLE: sim-core-0.1 README
 
 * TODO
+  - Small intro
+
   - change default vars.env to localhost
 
 * Standard mode
@@ -229,7 +231,7 @@ required arguments:
    on the first parameter combination so we get a valid csv
    as output.
 
-*** Experiment definition grammar
+** Experiment definition grammar
 
     Although the above is sufficient for simple experiments,
     relying on procedural code may hide the essence of the
@@ -361,8 +363,21 @@ required arguments:
     which is why the software is meant to be run in a distributed multiprocess
     fashion thanks to celery [[https://github.com/celery/celery]].
 
+** Experiment definition convention
+   <<sec:expconvention>>
+   We adopt the following convention to define experiments:
 
+   create a python file in =$PROJECT_ROOT/executor/experiments/=
 
+   define the experiment via arbitrary code or using the above presented
+   grammar and assign the callable or iterable that generates the configurations
+   to a toplevel variable called =batch=.
+
+   Note that you can define experiments wherever you want as long as
+   the file is in the =$PYTHONPATH= and a =batch= callable or iterable
+   is present.
+
+   This convention will be important later on in section [[sec:launchexp]].
 
 
 * Docker mode
@@ -449,16 +464,6 @@ required arguments:
 
 
 
-
-
-
-
-
-
-
-
-
-
 * Multiprocess distributed execution
 
   To allow for large scale simulations facilities are provided
@@ -527,15 +532,231 @@ required arguments:
    events.
 
 ** Launcher
+   <<sec:launchexp>>
+
+   A launcher is provided in the module =sim.executor.launcher=
+   which is linked in =.scripts/sim-launcher= for convenience.
+
+   You can use the launcher from any of the machines that have
+   a running (and correctly configured) instance of the project's
+   docker image.
+   Another option is launching from a machine (e.g. a laptop)
+   that will not have a worker running so long as it is properly configured
+   to contact the distributed system coordinator (see section [[sec:distrib-config]]).
+
+   it synopsis is as follows:
+
+   #+begin_src text
+usage: sim-launcher [-h] [--exp-module EXP_MODULE] [--async]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --exp-module EXP_MODULE
+  --async, -a
+
+   #+end_src
+
+   The =--exp-module= option controls which experiment will
+   be loaded and distributed on worker machines. If not provided
+   a small default experiment is chosen to test the system.
+   The value provided for the experiment module should be a
+   fully qualified python module name such as =sim.executor.experiments.exp_0=
+   just like in an *import* statement, pointing to a module in the =$PYTHONPATH=.
+   The =batch= variable within that module will be looked up according to
+   the convention presented in section [[sec:expconvention]].
+
+
+   If =--async= is not provided then the launcher will block
+   until the experiment completes. If =--async= is provided
+   then the launcher will exit as soon as the dispatching
+   completes, you can then monitor the progress as explained in
+   section [[sec:monitor]]
+
+   Once an experiment is successfully launched the coordinator
+   will distribute the necessary jobs to complete the experiment
+   to the available workers.
+
+   The launcher program outputs some information about the
+   dispatched experiment. In particular it outputs a python dictionary
+   whose =batch_uuid= key is what we are interested in for fetching
+   results later on as explained in section [[sec:retrieve-results]].
+   (If the =--async= flag is on the look for =_batch_uuid=)
+
+** Retrieving results
+   <<sec:retrieve-results>>
+
+   In distributed mode the database is used to store results
+   as they are produced.
+
+   Once an experiment is finished you can use the utility provided in
+   =$PROJECT_ROOT/.scripts/dctl= that helps to fetch all the aggregated
+   results of a full experiment from the database as a csv.
+
+   Within the docker environment this is linked to =~/.local/bin=
+   so you can use it directly
+
+   =$ dtcl [cmd] [options]=
+
+   in custom environment from =$PROJECT_ROOT= use it by
+   invoking the full with path
+
+   =.scripts/dtcl [cmd] [options]=
+
+   It provides 2 cmd(s):
+
+   - =dctl fs ls=
+     List the experiment results csv that are available
+     in the system.
+
+   - =dctl fs get <batch_uuid>.csv=
+     Get a result by name.
+
+   Note that from the docker environment tab-completion
+   is available for the file name, so you just need to remember the
+   first few characters of the =batch_uuid= and then press tab to complete.
+
+   Redirect the output of =dctl fs get= to a file in to save the
+   results.  If you are running dctl in the docker environment
+   redirect to =~/compose/data/<filename>.csv= to have the results
+   visible on the host system. (Remeber =compose/data= acts as
+   bridge - so called docker volume - between the virtual system in
+   the docker and your host system).
+
+   ~$ dctl fs get batch_uuid.csv > destination/name.csv~
+
+   substitute =batch_uuid=, =destination= and =name= appropriately.
 
 
 
 ** Configuring the distributed system
    <<sec:distrib-config>>
 
+   The distributed system is configured via the following environment
+   variables:
+
+   1. =MONGDB_URI=
+      Defines the address of the database in the following format:
+
+      *mongdb://<ip-adress>:<ip-port>*
+
+      so for example assuming the coordinator
+      was launched on a machine on
+      192.168.178.31 on the default port:
+
+      *mongodb://192.168.178.31:27020*
+
+      default *mongodb://0.0.0.0:27020*
+
+
+   2. =EXECUTOR_GRIDFS=
+      The name of the internal database to use as distributed
+      filesystem, the default is *executor-gridfs*
+
+   3. =EXECUTOR_DB=
+      The name of the internal database to use for task metadata
+      and partial results, default is *from-celery*
+
+   4. =REDIS_URI=
+      Similar to =MONGODB_URI= but for the redis server,
+      default is
+
+      *redis://0.0.0.0:6399*
+
+   5. =REDIS_DB=
+      The number (redis uses integers to identify the dbs) of the redis
+      internal database to use. Default $2$
+
+   6. =INIT_WORKERS=
+      The number of workers (processes) to run concurrently
+      if the machine is used as worker node.
+
+   7. =TZ=
+      The timezone to use (must be consistent on all machines for
+      proper coordination). Defaults to *Europe/Amsterdam*, must be a valid
+      timezone value.
+
+   Ideally you want to modify only the URI(s), =TZ= and =INIT_WORKERS=.
+
+   the suggested manner of configuration is putting all the values in
+   a .env file like the following:
+
+   #+begin_src text
+MONGODB_URI=mongodb://0.0.0.0:27020
+EXECUTOR_GRIDFS=executor-gridfs
+EXECUTOR_DB=from_celery
+
+REDIS_URI=redis://0.0.0.0:6399
+REDIS_DB=2
+
+INIT_WORKERS_N=4
+
+TZ=Europe/Amsterdam
+   #+end_src
+
+   Environment variables must be established for each running
+   terminal session. An utility is provided in =$PROJECT_ROOT/.scripts/source-env.sh=,
+   use it as follows from =$PROJECT_ROOT=
+
+   ~$ source .scripts/source-env.sh <path-to-env-file>~
+
+   The default .env file is located at =$PROJECT_ROOT/compose/defaults.env=.
+
+   Please note that you have to source your (or the default) .env file
+   for each session! In each session use the config doctor from
+   section [[sec:doctor]] to ensure the system is configured correctly.
+
+   NOTE: To streamline configuration you can edit
+   =$PROJECT_ROOT/compose/defaults.env= before distributing the
+   project to your machines, the variables in this file will be loaded
+   automatically when you start a pos-sim-core docker by following
+   instruction in section [[sec:launch]]. If you then still need to change
+   them at runtime you will have to soruce the file from inside the
+   container again as explained above.
+
+*** Config doctor
+    <<sec:doctor>>
+
+    Another utility is provided at which will validate the configuration and verify that the
+    coordination services are reachable.
+
+    It requires no arguments as it reads the environment vars.
+
+    You can invoke the =config-doctor= by running:
+
+    ~$ python -m sim.executor.config-doctor~
 
 
 
+** Monitoring the distributed system
+   <<sec:monitor>>
+
+   The status of the distributed system can be monitored with a web-ui
+   provided by =flower= (https://flower.readthedocs.io/en/latest/).
+
+   Start a new session on one of the machines running the project's
+   docker images (not the coordinator!)
+
+   ~$ docker exec -it pos-sim-core /bin/zsh~
+
+   once the session starts run:
+
+   ~$ launch-flower~
+
+   If no active worker is found this may log some warnings like:
+   ='stats' inspect method failed=, don't worry, as soon as
+   a worker connects the system will heal automatically.
+
+   The docker exposes port 5555 so you can open a browser
+   on that machine (outside of docker that is) and point it
+   to http://0.0.0.0:5555
+
+   Note that the graphs are not retroactive so keep a tab
+   open on the graph page and do not reload.
+
+
+
+
+* Results analysis
 
 * Project structure
 

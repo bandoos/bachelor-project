@@ -35,8 +35,8 @@ class Client(pymongo.MongoClient):
     """Extends the pymongo client
     to setup from config files
     """
-    def __init__(self):
-        super().__init__(conf.result_backend)
+    def __init__(self,result_backend=None):
+        super().__init__(result_backend or conf.result_backend)
 
 """
 c = Client()

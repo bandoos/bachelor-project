@@ -6,7 +6,7 @@ Abstract class for simulation objects
 """
 from IPython.display import Math, Latex, display
 import abc
-
+import pprint as pp
 
 from sim.core.decorators import *
 
@@ -45,6 +45,9 @@ class BaseObject():
         return {k:v for (k,v)
                 in self.dict(**kwargs).items()
                 if k not in self.blackList}
+
+    def __repr__(self):
+        return f'<{type(self)}: \n{pp.pformat(self.__dict__,indent=4)}>'
 
     @abc.abstractmethod
     def log(self,*args,**kwargs):
