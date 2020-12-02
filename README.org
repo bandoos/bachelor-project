@@ -1,9 +1,11 @@
 #+TITLE: sim-core-0.1 README
 
-* TODO
-  - Small intro
+* Intro
+  This document acts as technical appendix for my bachelor project.
 
-  - change default vars.env to localhost
+  It gives hands on instruction to use the library and reproduce the experiments.
+
+  For documentation of the actual code see [[http://139.162.161.39/thesis/build/html/index.html]].
 
 * Standard mode
 ** Installation
@@ -82,10 +84,10 @@
      If =.local/bin= is not in your $PATH then from the =$PROJECT_ROOT=
      run:
 
-     ~.scripts/sim-stake [OPTIONS]~.
+     ~$ python -m sim.core.main [OPTIONS]~.
 
      In that case remember that you should always be in =$PROJECT_ROOT=
-     and substitute ~sim-stake~ with ~.scripts/sim-stake~ in the following sections.
+     and substitute ~sim-stake~ with ~python -m sim.core.main~ in the following sections.
 
 
 ** Usage
@@ -181,7 +183,7 @@ required arguments:
 
    params = {'m':3,
              'T':300,
-	     'c':0.5,
+             'c':0.5,
              'stake_f':'eq',
              'sim':'random',
 	     'times':10}
@@ -756,38 +758,41 @@ TZ=Europe/Amsterdam
 
 
 
-* Results analysis
-
+* TODO Results analysis
+  TODO put link to analysis script and pdf.
 
 * Project structure
 
   #+begin_src  text
-.
+PROJECT_ROOT
 ├── build
 │   │  
 │   └── html
-│       ├── ... documentation html files
+│       └── ... generated html documentation
 │  
 ├── compose
 │   ├── data
-│   │   ├─ ... data folder for docker
 │   │  
-│   ├── docker-compose.yml
-│   ├── vars.env
-│   └── vars.wan.env
+│   ├── defaults.env
+│   └─  docker-compose.yml
 ├── Dockerfile
+├── doc_source
+│   ├── conf.py
+│   ├── index.rst
+│   └── _static
 ├── Makefile
 ├── notebooks
 │   └── Untitled.ipynb
 ├── pipinstalls.txt
-├── PKG-INFO
 ├── README.html
+├── README.md
 ├── README.org
+├── README.pdf
 ├── setup.cfg
 ├── setup.py
 ├── sim
 │   ├── cmd
-│   │   └ ucmd.py
+│   │   └── ucmd.py
 │   ├── core
 │   │   ├── abstract_sim.py
 │   │   ├── base_object.py
@@ -807,14 +812,15 @@ TZ=Europe/Amsterdam
 │   │   └── utils.py
 │   ├── executor
 │   │   ├── batch
-│   │   │   └──  ibatch.py
+│   │   │   └── ibatch.py
+│   │   │  
 │   │   ├── celeryconf.py
+│   │   ├── config-doctor.py
 │   │   ├── db
 │   │   │   ├── cmd.py
 │   │   │   ├── fs.py
 │   │   │   ├── logger.py
-│   │   │   └──  parser.py
-│   │   │  
+│   │   │   └── parser.py
 │   │   ├── dbdriver.py
 │   │   ├── experiments
 │   │   │   ├── exp_01.py
@@ -823,48 +829,35 @@ TZ=Europe/Amsterdam
 │   │   │   ├── exp_const_geom_pt2.py
 │   │   │   ├── exp_const_geom.py
 │   │   │   ├── exp_log.py
-│   │   │   └── foo.py
-│   │   │  
+│   │   │   └─ foo.py
 │   │   ├── launcher.py
 │   │   ├── logger.py
-│   │   ├── tasks.py
-│   │   └── test
-│   │       └── ctx.py
+│   │   └── tasks.py
+│   │  
 │   └── parser
 │       └── aparse.py
 │  
-├── sim.core.egg-info
-│   ├── dependency_links.txt
-│   ├── entry_points.txt
-│   ├── PKG-INFO
-│   ├── SOURCES.txt
-│   └── top_level.txt
-├── sim.egg-info
-│   ├── dependency_links.txt
-│   ├── entry_points.txt
-│   ├── PKG-INFO
-│   ├── requires.txt
-│   ├── SOURCES.txt
-│   └── top_level.txt
-├── source
-│   ├── conf.py
-│   ├── index.rst
-│   └── _static
+├── sim-coordinator
+│   ├── docker-compose.yml
+│   ├── mongo-volume
+│   │   └── README.txt
+│   └── redis-data
+│       └── README.txt
 └── todo.org
+
 #+end_src
 
 ** Locs
 
 |-----------------------------+-------+-------+-------+---------+------|
 | Language                    | Files | Lines | Blank | Comment | Code |
-|-----------------------------+-------+-------+-------+---------+------|
-| Python                      |    40 |  2993 |   755 |     316 | 1922 |
-|-----------------------------+-------+-------+-------+---------+------|
-| =./executor/dbdriver.py=    |       |   396 |   109 |      25 |  262 |
+| Python                      |    41 |  3121 |   776 |     316 | 2029 |
+| =./executor/dbdriver.py=    |       |   381 |    96 |      23 |  262 |
 | =./executor/tasks.py=       |       |   168 |    44 |      12 |  112 |
 | =./core/boot_exp.py=        |       |   144 |    32 |       3 |  109 |
 | =/core/test/stake-sim-0.py= |       |   159 |    35 |      15 |  109 |
-| =./executor/launcher.py=    |       |   192 |    54 |      37 |  101 |
+| =executor/config-doctor.py= |       |   137 |    33 |       0 |  104 |
+| =./executor/launcher.py=    |       |   195 |    55 |      39 |  101 |
 | =./core/sim_0.py=           |       |   144 |    35 |      11 |   98 |
 | =/executor/batch/ibatch.py= |       |   145 |    41 |      10 |   94 |
 | =./core/abstract_sim.py=    |       |   123 |    29 |      14 |   80 |
@@ -876,20 +869,20 @@ TZ=Europe/Amsterdam
 | =./core/utils.py=           |       |    64 |    12 |       1 |   51 |
 | =./core/node.py=            |       |    62 |    13 |       3 |   46 |
 | =./core/main.py=            |       |    67 |    18 |       5 |   44 |
+| =./core/base_object.py=     |       |    66 |    16 |       9 |   41 |
 | =./cmd/ucmd.py=             |       |    54 |    11 |       3 |   40 |
 | =./core/parser.py=          |       |    54 |    14 |       1 |   39 |
-| =./core/base_object.py=     |       |    63 |    16 |       9 |   38 |
 | =./core/test/random1.py=    |       |    46 |    15 |       0 |   31 |
 | =./core/sel_f.py=           |       |    42 |     8 |       6 |   28 |
 | =./core/stake_f.py=         |       |    50 |    11 |      12 |   27 |
 | =./executor/celeryconf.py=  |       |    37 |    11 |       0 |   26 |
 | =./executor/db/parser.py=   |       |    32 |     7 |       0 |   25 |
-| =./core/test/batch.py=      |       |    63 |    16 |      25 |   22 |
 | =./executor/db/cmd.py=      |       |    43 |    15 |       6 |   22 |
+| =./core/test/batch.py=      |       |    63 |    16 |      25 |   22 |
 | =./executor/test/ctx.py=    |       |    39 |    16 |       2 |   21 |
+| =nts/exp_const_geom_pt2.py= |       |    36 |    10 |       7 |   19 |
 | =riments/exp_const_geom.py= |       |    39 |    11 |       9 |   19 |
 | =./core/ecdf.py=            |       |    32 |     3 |      10 |   19 |
-| =nts/exp_const_geom_pt2.py= |       |    36 |    10 |       7 |   19 |
 | =or/experiments/exp_365.py= |       |    33 |     9 |       7 |   17 |
 | =utor/experiments/exp_0.py= |       |    34 |    10 |       7 |   17 |
 | =tor/experiments/exp_01.py= |       |    34 |    10 |       7 |   17 |
@@ -897,7 +890,7 @@ TZ=Europe/Amsterdam
 | =./core/rew_f.py=           |       |    27 |     9 |       2 |   16 |
 | =./core/test/tx.py=         |       |    21 |     6 |       1 |   14 |
 | =./core/__init__.py=        |       |    10 |     3 |       0 |    7 |
-| =./executor/logger.py=      |       |    17 |     3 |      10 |    4 |
 | =./executor/db/logger.py=   |       |    15 |     3 |       8 |    4 |
+| =./executor/logger.py=      |       |    17 |     3 |      10 |    4 |
 | =ecutor/experiments/foo.py= |       |     2 |     1 |       0 |    1 |
 |-----------------------------+-------+-------+-------+---------+------|
