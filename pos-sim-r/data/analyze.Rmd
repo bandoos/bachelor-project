@@ -1,0 +1,828 @@
+---
+title: "Results Analysis"
+output:
+  html_document:
+    fig_width: 12
+    fig_height: 12
+---
+
+Here we look at the first scenario with
+equal inital stake.
+
+
+## Load the data
+```{r}
+load_libs <- function(){
+    library(tidyverse)
+    library(dplyr)
+    library(data.table)
+    library(tibble)
+    library(ggplot2)
+    library(ggridges)
+    library(ggpubr)
+    library(ineq)
+    library(extremefit)
+    library(qwraps2)
+    library(knitr)
+    library(MASS)
+    library(scales)
+    library(latex2exp)
+    library(skimr)
+    theme_set(theme_bw())
+    library(ExPanDaR)
+}
+
+dir.create("./figure" )
+
+load_libs()
+                                        # basic example
+theme_set(theme_gray(base_size=17))
+
+read.exp <- function(folder)
+{
+    df.0 <-
+        list.files(folder,full.names = TRUE) %>%
+        map_df(~fread(.)) %>%
+        as_tibble()
+}
+```
+
+
+Our metrics are sensible to the number of nodes considered,
+so we normalize them expressing theri value is terms of their
+maximal achievable value for (computed from the number of nodes 'm' of
+the condition)
+
+Besides that we are now considering non-uniform initial populations,
+this means that we cannot assume initial varince was 0, as for uniform
+populations.
+
+Therefore we introduce scores in terms of difference of normalized
+metric between start and end of the process.
+
+So if a simulation starts with $sd\_0 = a$ and end with $sd\_T = b$
+and has maximal $sd\_max = c$, the score $sd.r.diff = b/c - a/c$
+
+This allows us to asses how the process transformed the inequality of the
+system.
+
+An equal transformation is applied to gini coefficient measures.
+
+```{r}
+
+m=3
+
+v0 = rep(1/m,m)
+sd(v0)
+Gini(v0)
+
+v1 = c(1,rep(0,m-1))
+sd(v1)
+Gini(v1)
+
+
+ms=2:100
+sds=mapply(function(m){sd(c(1,rep(0,m-1)))},ms)
+gs=mapply(function(m){Gini(c(1,rep(0,m-1)))},ms)
+
+df = as_tibble(data.frame(ms=ms,sds=sds,gs=gs))
+df %>% gather("metric","value",-ms) -> df.plot
+
+ggplot(df.plot,aes(x=ms,y=value,color=metric)) +
+    geom_point()+
+    geom_line()+
+    xlab("m (number of nodes) 2:100")+
+    labs(title="metric value varying number of nodes (Maximal inequality situation)")
+
+
+ggsave(filename="./figure/metrics1.png")
+
+
+## vary one's party stake
+## and adjust the other to see
+denoms=1:10000
+
+
+f<- function(dns,m,mf){
+    mapply(function(d){
+        vs = c(1/d,rep((1-1/d)/(m-1), m-1))
+        mf(vs)
+    },dns)
+}
+
+sds.100=f(denoms,100,sd)
+gs.100=f(denoms,100,Gini)
+
+do.one<-function(denoms,m){
+    as_tibble(data.frame(
+        fraction=1/denoms,
+        sds=f(denoms,m,sd),
+        gs=f(denoms,m,Gini),
+        m=m))
+}
+
+do.sweep<-function(denoms,ms){
+    fi = partial(do.one,denoms)
+    ms %>% map_df(~fi(.))
+}
+
+sweep.df = do.sweep(denoms,c(3,10,100))
+                                        #sweep.df = do.sweep(denoms,c(100,1000))
+
+
+
+
+
+sweep.df %>%
+    gather("metric","value",c(-fraction,-m)) -> df.long
+
+ggplot(df.long, aes(x=fraction,y=value,
+                    group=paste(metric,m),
+                    color=m,
+                    linetype=metric)) +
+    geom_line()+
+    scale_x_log10()+
+    annotation_logticks()+
+    facet_grid(m~.)+
+    xlab("log(fracional stake)")+
+    labs(title="metric value varying a single party's fractional stake",
+         subtitle=TeX(
+             "log-x-axis, $x\\rightarrow 0$ =almost perfect equality, $x\\rightarrow 1$=perfect inequality"))
+
+ggsave(filename="./figure/metrics2.png")
+
+x = seq(0,1,by=0.1)
+y = seq(0,1,by=0.1)
+df = as_tibble(data.frame(expand.grid(x=x,y=y))) %>%
+    mutate(z=y-x)
+
+
+
+
+plot2 <- ggplot(df, aes(x = x, y = y, z = z)) +
+    stat_contour(geom = "polygon", aes(fill = ..level..)) +
+    geom_tile(aes(fill = z)) +
+    stat_contour(bins = 15) +
+    guides(fill = guide_colorbar(title = "Score (m.T - m.0)")) +
+    scale_fill_gradientn(colours = terrain.colors(10)) +
+    xlab("Initial normalized metric value (m.r.0)") +
+    ylab("final normalized metric value (m.r.T)") +
+    labs(title="Score visualization heatmap")
+
+
+
+plot2
+
+ggsave(filename="./figure/score_contour.jpg",plot2)
+
+
+
+```
+
+## Populations
+
+```{r}
+
+betavs = rbeta(1000,2,2)
+paretovs = rpareto(1000,1.16)
+df.pop = data.frame(beta=betavs,pareto=paretovs)
+
+pbeta = ggplot(df.pop)+
+    geom_density(aes(beta),color="red") +
+    xlab("value") +
+    labs(title="Beta(2,2)")
+
+ppareto = ggplot(df.pop)+
+    geom_density(aes(pareto),color="blue") +
+    xlab("value") +
+    labs(title="Pareto(1.16)")
+
+fig = ggarrange(pbeta,ppareto)
+
+fig
+ggsave("./figure/beta-pareto.png",fig)
+
+```
+
+## Reward functions
+```{r}
+T=100
+c=1
+R=c*T
+
+t=1:T
+r_c = function(t){c}
+r_g = function(t){(1+R)^(t / T) - (1+R)^((t-1)/T)}
+
+rcs = mapply(r_c,t)
+rgs = mapply(r_g,t)
+
+rgs[[length(rgs)]]/rgs[[1]]
+
+data.frame(epoch=t,const=rcs,geom=rgs) %>%
+    as_tibble() %>%
+    gather("type","value",-epoch) %>%
+    ggplot(aes(x=epoch,y=value,color=type)) +
+    geom_line() +
+    geom_point() +
+    ylab("Dispensed Reward ")+
+    labs(title="Reward functions T=100, R=100, c=1") -> p
+p
+
+ggsave(filename="./figure/rewfns.png")
+
+```
+
+## Proposer selection
+```{r}
+
+denoms = seq(1,100,by=0.1)
+lin=identity
+logpos =(function (x) log(1+x))
+
+
+
+lin.exp <- (function (a,b,x) x-b*(exp(a*x)-1))
+
+lin.exp.1 <- partial(lin.exp,1,1/2)
+                                        #lin.exp.2 <- partial(lin.exp,1.1,0.3)
+
+
+do.val=(function (dns,fn)
+    mapply(fn,1/dns))
+
+res = mapply(partial(do.val,denoms),
+             list(lin=lin,
+                  logpos=logpos
+#                  lin.exp.1=lin.exp.1
+                                        #                  lin.exp.2=lin.exp.2
+                  )) %>%
+    data.frame(fraction=1/denoms) %>%
+    as_tibble() %>%
+    gather("fn","value",-fraction)
+
+res %>% ggplot(aes(x=fraction,y=value,color=fn)) +
+    geom_line() +
+    labs(title="Proposer selection functions")+
+    ylab("Selection preference") +
+    xlab("Fractional stake")
+
+ggsave(filename="./figure/psfns.png")
+
+```
+
+```{r}
+post.pro.exp <- function(df)
+{
+    df %>%
+        mutate_at(c("sim","stake_f"),as.factor) %>%
+
+    mutate(
+        stake_f = relevel(stake_f,ref="eq"),
+        sim = relevel(sim,ref="random"),
+                                        # create id label
+        id = paste("sim:",sim,"sf:",stake_f,
+                   "m:",m,"T:",T,"c:",c),
+
+        sd_0 = sqrt(var_0), # compute sd from variance
+        sd_T = sqrt(var_T),
+        sd_max = sqrt((1/m)*(1-1/m)), # compute max sd
+        sd.r.0 = sd_0/sd_max, # express initial and final sd
+        sd.r.T = sd_T/sd_max, # relative to maximal
+        eqi = 1 - sd.r.T, # old metric irrespective of initial value
+                                        # eqi is not used anymore DEPREC
+
+        ## compute a score as difference of normalized sd
+        ## introduced by the process
+        sd.r.diff = sd.r.T - sd.r.0,
+
+        ## similar for gini coeff
+        gini_max = (1 - 1/m), # compute maximal
+        gini.r.0 = gini_0 / gini_max, # express initial and final
+        gini.r.T = gini_T / gini_max, # in terms of maximal
+
+        ## compute score
+        gini.r.diff = gini.r.T - gini.r.0) %>%
+    group_by(id, sim, stake_f, m,T,c,R)
+}
+
+
+#### === OLD DATA ==== ####
+## random.folder = "./random-run.1"
+## const.geom.folder = "./const-and-geom.0"
+## log.folder = "./log-and-lin.edn"
+
+## rand.df = random.folder %>% read.exp()
+## summary(rand.df)
+
+## const.geom.df = const.geom.folder %>% read.exp()
+## summary(const.geom.df)
+
+## log.df = log.folder %>% read.exp()
+## summary(log.df)
+
+## agg.df = rbind(rand.df,const.geom.df) %>%
+##     #rbind(log.df)%>%
+##     post.pro.exp()
+
+
+data.folder <- "./exp_data/"
+agg.df = data.folder %>%
+    read.exp() %>%
+    post.pro.exp()
+
+
+
+summary(agg.df)
+
+agg.df %>% group_by(stake_f) %>%
+    summarise_at(c("gini.r.0","sd.r.0"),c(~mean(.))) %>%
+    kable(format = "markdown")
+
+agg.df %>% group_by(stake_f,sim) %>%
+                                        #filter(sim=="random") %>%
+    summarise_at(c("gini.r.diff","sd.r.diff"),c(~mean(.),~sd(.))) %>%
+    kable(format = "markdown")
+
+
+```
+
+read the files and add derived columns
+
+
+# Visualization
+```{r}
+#install.packages("ExPanDaR")
+
+                                        #ExPanD(agg.df)
+```
+
+we start by visualizing the results looking at distributions
+of the ratio $$ r.sd = \frac{final.sd}{max.final.sd} $$
+we call equitability value $1-r.sd$ to have a more intuitive
+sense of larger values being good.
+
+```{r}
+
+
+do.dist.plot<- function (agg.df,metric="sd.r.diff")
+{
+    TS = unique(agg.df$T)
+    mS = unique(agg.df$m)
+    cS = unique(agg.df$c)
+    sfS = unique(agg.df$stake_f)
+
+    p.main = ggplot(agg.df,
+                    aes_string(
+                        x = metric,
+                        y = "sim",
+                        fill = "sim",
+                        alpha=0.5)) +
+        geom_density_ridges(stat = "binline", bins = 40, scale = 0.95, draw_baseline = FALSE) +
+        theme(legend.position = "none") +
+        labs(
+            subtitle = paste("T=[",toString(TS),
+                             "] c=[",toString(cS),
+                             "] m=[",toString(mS),
+                             "] stake_f=[", toString(sfS),
+                             "]")) +
+        facet_grid(stake_f ~ .)
+
+    p.main
+
+}
+
+
+
+p.main = do.dist.plot(agg.df %>% filter(stake_f == "eq")
+                     ,metric = "gini.r.diff")
+p = p.main + labs(title="Overall final gini.r.diff score distributions per scheme")
+p
+
+ggsave("./figure/overallres.png",p)
+```
+
+the above plot shows density for values of the sd.r.diff metric,
+split by scheme and initial distribution, across all paramter condition
+settings (T,c,m).
+
+A value of exactly +1 in this score means that the process
+took a state with zero variance and moved it to the maximal achievable
+variance. In contrast a value of -1 means the system started in a state
+with maximal variance and was reduced to no variance.
+
+We can see from the distributions above that without controlling for m,c,T
+the process generally results positive scores, meaning that the values
+where spread further apart than they initially where.
+
+For example in the first scenario, with stake_f uniform at 1/m
+the score cannot be negative, as the initial variance is already
+minimal, so the process can only end with equal variance (score 0) or
+higher variance
+
+On the other hand when the initial state is not uniform,
+the process CAN reduce variance of the state, since those from the
+original population that had higher initial stakes, were selected
+equiprobably to those with lower stakes, thus not preserving those
+initial differences.
+
+NOTE:
+considering the fully random process,
+one party stake of the totoal m (with init. eq state) after T epochs,
+would be binomially distributed around (c*T)/m.
+So we expect score to tend to 0 as T approaches infinity.
+Pratically though if T does not tend to infinity,
+assuming no previous difference was added until T-1,
+someone will be choses last, thus leaving the system with positive
+score.
+
+## Plot init pop scores
+```{r}
+
+p.00 = ggplot(agg.df,aes(sd.r.0,fill=stake_f)) +
+    geom_histogram(alpha=0.5,bins=50,position = "identity") +
+    facet_grid(~m)
+
+p.11 = ggplot(agg.df,aes(gini.r.0,fill=stake_f)) +
+    geom_histogram(alpha=0.5,bins=50,position = "identity") +
+    facet_grid(~m)
+
+fig = ggarrange(p.00,p.11,nrow=2)
+                                        # Annotate the figure by adding a common labels
+annotate_figure(fig,
+                top = text_grob(
+                    "Initial metric values distributions by number of nodes",
+                    face = "bold", size = 14))
+
+ggsave("./figure/metricini.png",fig)
+
+p1 <- ggplot(agg.df,aes(stake_f,
+                        gini.r.0,
+                        stake_f)) +
+    geom_boxplot(alpha=0.5) #+
+
+
+p2 <- ggplot(agg.df,aes(stake_f,
+                        gini.r.diff,
+                        stake_f)) +
+    geom_boxplot(alpha=0.5) +
+    facet_grid(~sim)
+
+p2
+
+ggarrange(p1,p2)
+
+
+```
+
+## Looking in non-uniform state
+to the relation between score 0 and the diffrence
+
+```{r}
+
+p3 <- ggplot(agg.df %>% filter(stake_f != "eq")
+            ,aes(sd.r.0,
+                 sd.r.diff,
+                 color=stake_f,
+                 size=T))+
+    geom_point(alpha=0.5) +
+    geom_hline(yintercept=0) +
+    facet_grid(c~sim)
+p3
+
+
+p4 <- ggplot(agg.df %>% filter(stake_f != "eq")
+            ,aes(gini.r.0,
+                 gini.r.diff,
+                 color=stake_f,
+                 ))+
+    geom_point(alpha=0.5) +
+    facet_grid(c~sim)
+p4
+
+p5 <- ggplot(agg.df # %>% filter(stake_f != "eq")
+            ,aes(jitter(log(c,10)),
+                 jitter(under_target),
+                 color=stake_f,
+                 ))+
+    geom_point(alpha=0.5) +
+    geom_smooth(method='lm')+
+    facet_grid(~sim)
+p5
+
+```
+
+
+```{r}
+
+
+sneak.df =  agg.df %>% filter(m==10,
+                              T==1000,
+                              sim=="const",
+                              stake_f=="eq",
+                              )
+
+sneak.df %>%  ggplot(aes(x=gini.r.diff, group=factor(c), fill=log(c,10))) +
+    geom_histogram(aes(y=..count../sum(..count..)), color="#e9ecef", alpha=0.4, position = 'identity')+
+    scale_fill_gradient2() +
+    ylab("frequency")+
+    labs(title="Dramatic scenario, initially equal stake (minimal inequality)",
+         subtitle=paste("#N=",nrow(sneak.df),", 10 nodes, 1000 epochs"),
+         caption="x=1 -> maximal inequality") +
+    scale_y_continuous(breaks=scales::pretty_breaks(n = 10))
+
+
+
+ggsave("./figure/sneak.png")
+
+## decomposing per parameter
+res.T = p.main + facet_grid(stake_f~T) +
+    labs(title="Overall results controlling for T")
+
+res.T
+
+ggsave("./figure/resT.png",res.T)
+
+p.main + facet_grid(stake_f~m)
+
+p.main + facet_grid(stake_f~c)
+
+```
+
+# Looking at a some parameter setting
+
+## fixing c
+
+When looking at stake_f "eq" the main effect seems related to c,
+the load parameter.
+
+```{r  message=FALSE, warning=FALSE}
+
+p.3 = do.dist.plot(agg.df %>% filter(stake_f=="eq"),
+                   metric = "gini.r.diff")
+
+p.3 + labs(title="Overall final sd.r.diff score distributions per scheme")
+
+res.c.eq = p.3 + facet_grid(~c) +
+    labs(title="Overall results controlling for c")
+res.c.eq
+
+ggsave("./figure/eqc.png",res.c.eq)
+
+```
+
+We can indeed see that const gets closer and closer to being mostly
+0-equitabile as c grows.
+
+On the other hand geom is close in perfmance to random scheme
+when $c$ is low, but equitability starts deteriorating as $c$ grows,
+withe ever larger right tail.
+
+## Looking further in geom vs const
+we now look at how score varies with the interaction
+of c and T.
+
+for initially uniform state
+
+```{r  message=FALSE, warning=FALSE}
+
+p.g.eq = do.dist.plot(agg.df %>% filter(stake_f=="eq",sim=="const" | sim=="geom"),
+                      metric = "gini.r.diff")
+
+p.g.eq + labs(title=
+                  paste(
+                      "final gini.r.diff score distributions (stake_f='eq')",
+                      " by c and T combination ('const' and 'geom' schemes)")) +
+    facet_grid(T~c)
+
+```
+
+both const and geom scores critically (and positvely) depend on c, on
+the other hand while there appears to be a negative effect of T
+especially for geom.
+Here postive effect means increasing score, hence increasing the
+inequality, so worse performace, while the negative effect means the
+the inequality is amplified less.
+
+
+for initially pareto(1.16) distributed state:
+
+```{r}
+p.g.pareto = do.dist.plot(agg.df %>% filter(stake_f=="pareto",sim=="const" | sim=="geom"),
+                          metric = "gini.r.diff")
+
+p.g.eq + labs(title="final gini.r.diff score distributions by c and T combination ('const' and 'geom')") +
+    facet_grid(T~c)
+
+```
+
+for beta:
+```{r}
+
+p.g.beta = do.dist.plot(agg.df %>% filter(stake_f=="beta",sim=="const" | sim=="geom"),
+                        metric = "gini.r.diff")
+
+p.g.beta + labs(title="final gini.r.diff score distributions by c and T combination (geometric reward)") +
+    facet_grid(paste("T:",T)~paste("c:",c)) +
+    scale_x_continuous(breaks=scales::pretty_breaks(n = 4))
+
+
+```
+
+
+
+# Effects
+The following plot show all the variables involved, but we group and
+average across number of nodes. This allows to better grasp relations
+between c and T across schemes.
+
+```{r, warning=FALSE}
+summ.df <- agg.df %>%
+    group_by(T,R,c,sim,stake_f) %>%
+    summarise_all(.funs=c(mean)) %>%
+    mutate(id = paste(T,c,sim,stake_f))
+
+
+do.effect.plot<- function(df,predictor="c",metric="sd.r.diff")
+{
+    ggplot(data=df,aes_string(x=predictor,
+                              y=metric,
+                              col="T",group="T"
+                              )) +
+        geom_line(size=1) +
+        stat_smooth(method='lm',size=0.4,se=FALSE,linetype = "dashed") +
+        facet_grid(stake_f ~ sim)
+}
+
+## p.0 <- ggplot(data=summ.df) +
+##     geom_line(aes(x=c,
+##                   y=sd.r.diff,
+##                   col=T,group=T)) +
+##     facet_grid(stake_f~sim) +
+##     labs(title="Comparing equitability across schemes (m ~ sim)",
+##          subtitle="Log10 scale for x-axis")
+
+
+```
+
+## in log coords
+
+The effect is more clear if we use log scale for the x axis
+suggesting an exponential relation.
+
+```{r, warning=FALSE}
+
+### 1
+p.c.sd.diff = do.effect.plot(summ.df) +
+    scale_x_log10()+
+    scale_y_continuous(breaks=scales::pretty_breaks(n = 10))+
+    annotation_logticks()
+p.c.sd.diff
+
+
+### 2
+p.c.g.diff = do.effect.plot(summ.df,metric="gini.r.diff") +
+    scale_x_log10()+
+    scale_y_continuous(breaks=scales::pretty_breaks(n = 10))+
+    annotation_logticks()
+p.c.g.diff
+
+### 3
+p.c.ut = do.effect.plot(summ.df,metric="under_target") +
+    scale_x_log10()+
+    scale_y_continuous(breaks=scales::pretty_breaks(n = 10))+
+    annotation_logticks()
+p.c.ut
+
+
+summ.df %>% filter(c <= 1) %>% group_by (sim, stake_f, c) %>%
+    summarise_all(.funs=c(mean)) %>%
+    mutate(id = paste(sim,stake_f)) -> summ.df.2
+
+
+do.effect.plot.2 <- function(df,predictor="c",metric="sd.r.diff")
+{
+    ggplot(data=df,aes_string(x=predictor,
+                              y=metric,
+                              col="stake_f")) +
+        geom_line() +
+        stat_smooth(method='lm',size=1.4,se=FALSE,linetype = "dashed") +
+        geom_vline(xintercept=1)+
+        xlab("log(c)") +
+        facet_grid(~sim)
+}
+
+
+### 4
+p.sd.eff = do.effect.plot.2(summ.df.2) +
+    scale_x_log10()+
+    scale_y_continuous(breaks=scales::pretty_breaks(n = 10))+
+    annotation_logticks()
+
+## ### 5
+p.g.eff = do.effect.plot.2(summ.df.2,metric="gini.r.diff") +
+    scale_x_log10()+
+    scale_y_continuous(breaks=scales::pretty_breaks(n = 10))+
+    annotation_logticks() +
+    labs(title="Visualizing The effect of the load log(c)=log(R/T)")
+
+p.g.eff
+
+p.sd.eff
+
+#fig = ggarrange(p.g.eff,p.sd.eff)
+
+# fig
+## annotate_figure(fig,
+##                 top = text_grob(
+##                     "Visualizing The effect of the load log(c)=log(R/T)",
+##                     face = "bold", size = 14))
+
+## ggsave("c-eff.png",p.g.eff)
+
+summ.df.2 %>% filter(sim=="random") %>% ggplot(aes(x=c,y=sd.r.diff,color=stake_f)) +
+    geom_line() +
+    scale_x_log10() +
+    stat_smooth(method='lm',size=1.4,se=FALSE,linetype = "dashed") +
+    scale_y_continuous(breaks=scales::pretty_breaks(n = 20))
+
+
+```
+
+$T$ seems to have a moderate positive effect, suggesting with longer period
+it is easier to achieve higher equitability.
+
+The "const" scheme appears not to be influenced by this effect, or better,
+it seems an interaction between c and T is important in determining equitability.
+
+$c$ appears to have a weak influence in Random and log_const schemes,
+while in all other schems its effect appears clearly negative,
+suggesting that having larger R/T ratio (more dispensed reward), makes
+it even harder to achieve high equitability.
+
+$c$ has a particulary dramatic effect on constant reward scheme,
+with equitability comparable to the other strategies when $c$ is very
+low, but rapidly decreasing, to nearly 0, as $c$ grows.
+
+(considering that if the initial distrib. has variance 0, we have at $t=0$,
+$equitability = (1-sd.r) = 1$)
+
+Both geometric solutions show similar linear negative effect of $c$,
+an interaction is observed of c and T for geometric schemes, with
+the strength of the effect of c being inversely proportional to T.
+This means that for the same $c$ ratio, having larger T, may have a positive effect
+on equitability. In other words that geometric solutions better reduce inequality
+if epochs are chosen longer.
+
+
+
+## GLM
+```{r}
+
+
+df.test = as_tibble(data.frame(agg.df ))
+
+
+lm.simple <-  lm(data = df.test, sd.r.diff ~ log(c)+ T + m)
+summary(lm.simple)
+
+
+df.test.1 = df.test %>% filter(stake_f=="eq")
+
+lm.1 <-  lm(data = df.test.1, sd.r.diff ~ log(c) * sim)
+summary(lm.1)
+
+                                        # Full model
+lm.0 <- lm(data = df.test, gini.r.diff ~ log(c) * sim * stake_f)
+summary(lm.0)
+```
+
+## AIC
+```{r  message=FALSE, warning=FALSE}
+lm.f <- stepAIC(lm.0)
+```
+
+## Anova
+```{r}
+summary(lm.f)
+
+aov.0 <- aov(lm.f)
+anova(aov.0)
+```
+
+## extended model
+
+```{r  message=FALSE, warning=FALSE}
+
+lm.ex <- lm(data = df.test, gini.r.diff ~ log(c) * sim * stake_f * T)
+# summary(lm.ex)
+
+lm.ex.f <- stepAIC(lm.ex)
+
+
+summary(lm.ex.f)
+
+
+plot(lm.ex.f)
+
+```

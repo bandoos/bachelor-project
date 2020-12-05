@@ -468,6 +468,9 @@ required arguments:
 
 * Multiprocess distributed execution
 
+
+  [[file:./pos-sim.png]]
+
   To allow for large scale simulations facilities are provided
   to run multiple simulations in parallel on multiple machines
   thanks to Celery (v4.4.3) https://docs.celeryproject.org/en/4.4.3/getting-started/resources.html
@@ -758,8 +761,45 @@ TZ=Europe/Amsterdam
 
 
 
-* TODO Results analysis
+* INPROGRESS Results analysis
+
+  Once the desired experiment csv file has been retrieved
+  form the database with the =dctl= utility, the analysis
+  can be performed by the R script provided in =$PROJECT_ROOT/pos-sim-r/analyze.Rmd=.
+
+  Compiling R dependencies may take a lot of time (nearly 15 minutes
+  for the dependencies of =analyze.Rmd=, and errors in the process may
+  harm the reproducibility of the analysis. Therefore a third
+  docker image is provided which ships with all the dependencies
+  compiled in it, and when run exposes an R-studio web interface
+  to run (and possibly customize) the analysis.
+
+  You should run the analysis docker on the machine where you downloaded
+  the results via =dctl= or transfer the csv files to another machine
+  and then use that one.
+
+  Copy the results csv file to =$PROJECT_ROOT/pos-sim-r/data/exp_data/=
+
+  *Download the image from (TODO link to download and sha sum)*
+
+  *Load the image to the docker engine*
+
+  ~$ docker load < pos-sim-r-latest.tar.gz~
+
+  Enter =$PROJECT_ROOT/pos-sim-r= dir and run:
+
+  ~$ docker-compose up~
+
+  Point a browser to R-studio web-ui on localhost:8787.
+
+  enter the =projects= folder and Open the analyze.Rmd file, press 'knit'.
+  *Alternatively run from the rstudio terminal:* ~$ make render~
+
+
+
+
   TODO put link to analysis script and pdf.
+  TODO use figure folder for png generation
 
 * Project structure
 
