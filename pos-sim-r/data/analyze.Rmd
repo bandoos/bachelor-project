@@ -12,6 +12,9 @@ equal inital stake.
 
 ## Load the data
 ```{r}
+
+data.folder <- "./exp_data/"
+
 load_libs <- function(){
     library(tidyverse)
     library(dplyr)
@@ -326,7 +329,7 @@ post.pro.exp <- function(df)
 ##     post.pro.exp()
 
 
-data.folder <- "./exp_data/"
+
 agg.df = data.folder %>%
     read.exp() %>%
     post.pro.exp()

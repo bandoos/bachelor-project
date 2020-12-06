@@ -1,7 +1,9 @@
 #+TITLE: sim-core-0.1 README
+#+AUTHOR: Luca Bandelli (l.bandelli@student.rug.nl)
+#+LaTeX_HEADER:  \addtolength{\hoffset}{-3cm} \addtolength{\textwidth}{2cm}
 
 * Intro
-  This document acts as technical appendix for my bachelor project.
+  This document acts as technical appendix for the bachelor project pos-sim-0.1
 
   It gives hands on instruction to use the library and reproduce the experiments.
 
@@ -17,7 +19,7 @@
    Download the .zip folder of the project to a location
    we will refer to as =$PROJECT_ROOT=
 
-    The alternative is using the provided Docker image,
+    The alternative is using the provided Docker images,
     which will work on GNU/linux, OSX and windows. See the
     *Docker mode* section for instructions.
 
@@ -137,7 +139,7 @@ required arguments:
      - $sim=random$ scheme,
      - repeating the experiment 10 times ($times=10$)
 
-     A csv is produced on standard output which looks like:
+     A csv is produced on standard output which looks like (may overflow page on pdf):
 
      #+begin_src text
      m,T,c,R,sim,stake_f,var_0,var_T,gini_0,gini_T,under_target,avg_loss,over_target,avg_gain
@@ -763,128 +765,184 @@ TZ=Europe/Amsterdam
 
 * INPROGRESS Results analysis
 
-  Once the desired experiment csv file has been retrieved
-  form the database with the =dctl= utility, the analysis
+  Experiment results are analyzed with R code.  Compiling R
+  dependencies may take a lot of time (nearly 30 minutes for the
+  dependencies of =analyze.Rmd= on an medium tier laptop), and errors
+  in the process may harm the reproducibility of the
+  analysis. Therefore a third docker image is provided which ships
+  with all the dependencies compiled in it, and when run exposes an
+  R-studio web interface to run (and possibly customize) the analysis.
+
+  Whether you produced results via single process code, or via the
+  distributed system you will have one or more csv files with results
+  to analyze.
+
+  If running via the distributed system use =dctl=
+  utility [[ref:dctl]] to retrieve form the database with the desired csv.
+
+  The analysis
   can be performed by the R script provided in =$PROJECT_ROOT/pos-sim-r/analyze.Rmd=.
 
-  Compiling R dependencies may take a lot of time (nearly 15 minutes
-  for the dependencies of =analyze.Rmd=, and errors in the process may
-  harm the reproducibility of the analysis. Therefore a third
-  docker image is provided which ships with all the dependencies
-  compiled in it, and when run exposes an R-studio web interface
-  to run (and possibly customize) the analysis.
 
   You should run the analysis docker on the machine where you downloaded
   the results via =dctl= or transfer the csv files to another machine
   and then use that one.
 
-  Copy the results csv file to =$PROJECT_ROOT/pos-sim-r/data/exp_data/=
+  Copy the results csv file to =$PROJECT_ROOT/pos-sim-r/data/exp_data/=.
+
+  NOTE: =$PROJECT_ROOT/pos-sim-r/data= is a docker volume that will be mounted
+  when the image is run, so you can copy from your host system with ~cp~ or
+  drag/drop and the changes will be reflected inside the container.
+
+  NOTE: The analysis script will merge all files that it finds in the =exp_data=
+  directory so be careful to only have the files you desire in there
+  later when you run the script. If you create other data folders you can control
+  which is used by ediding the first cell of =analyze.Rmd= where *data.folder* is defined.
 
   *Download the image from (TODO link to download and sha sum)*
 
-  *Load the image to the docker engine*
+  Load the image to the docker engine:
 
   ~$ docker load < pos-sim-r-latest.tar.gz~
 
-  Enter =$PROJECT_ROOT/pos-sim-r= dir and run:
+  Enter =$PROJECT_ROOT/pos-sim-r=. Edit the *defaults.env* file to
+  change the default password ('foobarbaz') for the R-studio server.
+  (The username is always 'rstudio'). Now run
 
   ~$ docker-compose up~
 
-  Point a browser to R-studio web-ui on localhost:8787.
+  As usual this will hang until you stop it with CTRL-C
+
+  Point a browser to R-studio web-ui on http://localhost:8787. It will ask
+  to login with password you provided in *defaults.env*.
 
   enter the =projects= folder and Open the analyze.Rmd file, press 'knit'.
-  *Alternatively run from the rstudio terminal:* ~$ make render~
 
+  Alternatively run from the rstudio terminal: ~$ make render~.
 
+  Assuming valid data is found in =projects/exp_data= within the
+  docker, the analyze.Rmd will produce a pdf/markdown/html (depending
+  on kint options, defaults to html) file that presents all the
+  results. The file will be saved in the docker =projects/= folder and
+  is therefore also present on your host machine in
+  =$PROJECT_ROOT/pos-sim-r/data=.
 
+  The main experiment discussed in the project's paper is at: http://139.162.161.39/thesis/analyze.html
 
-  TODO put link to analysis script and pdf.
-  TODO use figure folder for png generation
+  Yours will be available locally: at http://localhost:8787/files/projects/analyze.html
+
 
 * Project structure
 
   #+begin_src  text
 PROJECT_ROOT
-├── build
-│   │  
-│   └── html
-│       └── ... generated html documentation
-│  
-├── compose
-│   ├── data
-│   │  
-│   ├── defaults.env
-│   └─  docker-compose.yml
-├── Dockerfile
-├── doc_source
-│   ├── conf.py
-│   ├── index.rst
-│   └── _static
-├── Makefile
-├── notebooks
-│   └── Untitled.ipynb
-├── pipinstalls.txt
-├── README.html
-├── README.md
-├── README.org
-├── README.pdf
-├── setup.cfg
-├── setup.py
-├── sim
-│   ├── cmd
-│   │   └── ucmd.py
-│   ├── core
-│   │   ├── abstract_sim.py
-│   │   ├── base_object.py
-│   │   ├── boot_exp.py
-│   │   ├── decorators.py
-│   │   ├── ecdf.py
-│   │   ├── implem.py
-│   │   ├── __init__.py
-│   │   ├── main.py
-│   │   ├── node.py
-│   │   ├── parser.py
-│   │   ├── plot.py
-│   │   ├── rew_f.py
-│   │   ├── sel_f.py
-│   │   ├── sim_0.py
-│   │   ├── stake_f.py
-│   │   └── utils.py
-│   ├── executor
-│   │   ├── batch
-│   │   │   └── ibatch.py
-│   │   │  
-│   │   ├── celeryconf.py
-│   │   ├── config-doctor.py
-│   │   ├── db
-│   │   │   ├── cmd.py
-│   │   │   ├── fs.py
-│   │   │   ├── logger.py
-│   │   │   └── parser.py
-│   │   ├── dbdriver.py
-│   │   ├── experiments
-│   │   │   ├── exp_01.py
-│   │   │   ├── exp_0.py
-│   │   │   ├── exp_365.py
-│   │   │   ├── exp_const_geom_pt2.py
-│   │   │   ├── exp_const_geom.py
-│   │   │   ├── exp_log.py
-│   │   │   └─ foo.py
-│   │   ├── launcher.py
-│   │   ├── logger.py
-│   │   └── tasks.py
-│   │  
-│   └── parser
-│       └── aparse.py
-│  
-├── sim-coordinator
-│   ├── docker-compose.yml
-│   ├── mongo-volume
-│   │   └── README.txt
-│   └── redis-data
-│       └── README.txt
-└── todo.org
-
+.
+|-- .base-image
+|-- compose
+|   |-- data
+|   |   `-- .gitgignore
+|   |-- defaults.env
+|   |-- docker-compose.yml
+|   |-- vars.env
+|   `-- vars.wan.env
+|-- Dockerfile
+|-- .dockerignore
+|-- doc_source
+|   |-- conf.py
+|   |-- index.rst
+|   `-- _static
+|-- .gitignore
+|-- Makefile
+|-- pos-sim-r
+|   |-- data
+|   |   |-- analyze.html
+|   |   |-- analyze.Rmd
+|   |   |-- exp_data
+|   |   |   |-- exp_const_geom.csv
+|   |   |   `-- .gitkeep
+|   |   |-- figure
+|   |   |   `-- .gitkeep
+|   |   |-- makefile
+|   |   `-- make.r
+|   |-- defaults.env
+|   |-- docker.build.sh
+|   |-- docker-compose.yml
+|   |-- Dockerfile
+|   |-- docker.launch.sh
+|   `-- install_deps.r
+|-- README.html
+|-- README.md
+|-- README.org
+|-- README.pdf
+|-- .scripts
+|   |-- add-aur.sh
+|   |-- dctl
+|   |-- get-batch-file
+|   |-- install.sh
+|   |-- launch-flower
+|   |-- list-batch-files
+|   |-- revoke-sudo.sh
+|   |-- run-worker
+|   |-- sim-launcher
+|   |-- sim-stake1
+|   |-- source-env.sh
+|   |-- tabulate.sh
+|   `-- welcome.sh
+|-- setup.cfg
+|-- setup.py
+|-- sim
+|   |-- cmd
+|   |   `-- ucmd.py
+|   |-- core
+|   |   |-- abstract_sim.py
+|   |   |-- base_object.py
+|   |   |-- boot_exp.py
+|   |   |-- decorators.py
+|   |   |-- ecdf.py
+|   |   |-- implem.py
+|   |   |-- __init__.py
+|   |   |-- main.py
+|   |   |-- node.py
+|   |   |-- parser.py
+|   |   |-- plot.py
+|   |   |-- rew_f.py
+|   |   |-- sel_f.py
+|   |   |-- sim_0.py
+|   |   |-- stake_f.py
+|   |   `-- utils.py
+|   |-- executor
+|   |   |-- batch
+|   |   |   `-- ibatch.py
+|   |   |-- celeryconf.py
+|   |   |-- config-doctor.py
+|   |   |-- db
+|   |   |   |-- cmd.py
+|   |   |   |-- fs.py
+|   |   |   |-- logger.py
+|   |   |   `-- parser.py
+|   |   |-- dbdriver.py
+|   |   |-- experiments
+|   |   |   |-- exp_01.py
+|   |   |   |-- exp_0.py
+|   |   |   |-- exp_365.py
+|   |   |   |-- exp_const_geom_pt2.py
+|   |   |   |-- exp_const_geom.py
+|   |   |   |-- exp_log.py
+|   |   |   `-- foo.py
+|   |   |-- launcher.py
+|   |   |-- logger.py
+|   |   `-- tasks.py
+|   `-- parser
+|       `-- aparse.py
+|-- sim-coordinator
+|   |-- docker-compose.yml
+|   |-- mongo-volume
+|   |   |-- .gitignore
+|   |   `-- README.txt
+|   `-- redis-data
+|       |-- .gitignore
+|       `-- README.txt
+`-- todo.org
 #+end_src
 
 ** Locs
