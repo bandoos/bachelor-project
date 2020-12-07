@@ -45,8 +45,8 @@ db = c['from_celery']
 
 db['celery_taskmeta'].find_one()
 
-coll = db['mona']
-coll.insert_one({'mona':"ti"})
+coll = db['foo']
+coll.insert_one({'bar':"baz"})
 
 c.close()
 """

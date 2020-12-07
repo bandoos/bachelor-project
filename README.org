@@ -479,7 +479,7 @@ required arguments:
   coordinated by Redis [[https://redis.io/]] and storing results on
   Mongodb [[https://www.mongodb.com/]].
 
-  While a setup without docker in for this use case is possible
+  While a setup without docker for this use case is possible
   it involves installing the project, mongodb and redis to your system,
   and since the purpose of this facility is to deploy easily on several
   possibly heterogeneous systems the easiest and more reliable solution
@@ -497,6 +497,9 @@ required arguments:
    simply enter =$PROJECT_ROOT/sim-coordinator= and run
 
    ~$ docker-compose up~
+
+   Note that this uses the official redis and mongodb images
+   so no =docker load= is needed in this case.
 
    This will start the database and redis instances
    on predefined ports (see section [[sec:distrib-config]] if you want to
@@ -763,7 +766,7 @@ TZ=Europe/Amsterdam
 
 
 
-* INPROGRESS Results analysis
+* Results analysis
 
   Experiment results are analyzed with R code.  Compiling R
   dependencies may take a lot of time (nearly 30 minutes for the

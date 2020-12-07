@@ -1,0 +1,14 @@
+version: '3'
+services:
+  pos-sim-core:
+    network_mode: 'host'
+    image: 'pos-sim-r:latest'
+    container_name: 'pos-sim-r'
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    volumes:
+      - ./data:/home/rstudio/projects/
+    env_file:
+      - defaults.env # set $PASSWORD here
+    ports:
+      - '8787:8787'

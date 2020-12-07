@@ -34,6 +34,6 @@ b = B()
 
 with b as ctx:
 ##    ctx()
-    print("mona")
+    print("foo")
 
 """

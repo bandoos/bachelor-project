@@ -10,6 +10,7 @@ Here we look at the first scenario with
 equal inital stake.
 
 
+
 ## Load the data
 ```{r}
 
