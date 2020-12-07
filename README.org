@@ -381,6 +381,9 @@ required arguments:
    the file is in the =$PYTHONPATH= and a =batch= callable or iterable
    is present.
 
+   The main experiment presented in the paper is located in module
+   =sim.executor.experiments.exp_0=.
+
    This convention will be important later on in section [[sec:launchexp]].
 
 
@@ -431,7 +434,7 @@ required arguments:
 
    ~$ docker load < pos-sim-core-latest.tar.gz~
 
-** Launch the system
+ ** Launch the system
    <<sec:launch>>
    Once the image is successfully loaded enter
    the =$PROJECT_ROOT/compose= folder and run:
@@ -995,3 +998,8 @@ PROJECT_ROOT
 | =./executor/logger.py=      |       |    17 |     3 |      10 |    4 |
 | =ecutor/experiments/foo.py= |       |     2 |     1 |       0 |    1 |
 |-----------------------------+-------+-------+-------+---------+------|
+
+* Images sha256sum
+
+dd9d564c2b26b3df8d105235d0ae4f2fe98d45d52620021b5a7d08617b730cd78  pos-sim-r-latest.tar.gz
+dbe608295d63480a21421f24b7582dea8f70613b383d783e46b0d7683e675ca  pos-sim-core-latest.tar.gz

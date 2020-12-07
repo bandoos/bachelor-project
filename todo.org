@@ -1,8 +1,12 @@
-* Docker deployment
+* DONE Docker deployment
   - ensure sim.executor.celeryconf uses ENV VARS
 
+* TODO push docker images for download
+* TODO put download links in readme
+* TODO push latest readme
+* TODO Add paragraph about Want et. al
+* TODO push project to git_lab
+
 * DONE embed coorinator in main repo
-* structure
-	- veryfiy that egg* folders can be removed!
-
-
+* DONE structure
+  - prune useless files
