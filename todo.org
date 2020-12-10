@@ -1,13 +1,13 @@
 * DONE Docker deployment
   - ensure sim.executor.celeryconf uses ENV VARS
 
-* INPROGRESS push docker images for download
+* DONE push docker images for download
 * DONE check sums
 * DONE put download links in readme
-* TODO push latest readme
+* DONE push latest readme
 * DONE Add paragraph about Wang et. al
-* TODO push project to git*
-
+* DONE push project to git*
+* DONE rebuild and push doc
 * DONE embed coorinator in main repo
 * DONE structure
   - prune useless files

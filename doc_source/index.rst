@@ -6,6 +6,9 @@
 Welcome to sim-core-0.1's documentation!
 ========================================
 
+See https://github.com/bandoos/bachelor-project for
+the readme.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
