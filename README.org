@@ -16,8 +16,8 @@
     It should also work on OSX (mac) if a python (>3) and
     pip are installed.
 
-   Download the .zip folder of the project to a location
-   we will refer to as =$PROJECT_ROOT=
+   Clone the repo (TODO) of the project to
+   a location we will refer to as =$PROJECT_ROOT=
 
     The alternative is using the provided Docker images,
     which will work on GNU/linux, OSX and windows. See the
@@ -427,7 +427,10 @@ required arguments:
    packages and tweaks to make the experience pleasant
    like tab-completion on the project's commands.
 
-   Using a pre-built image is suggested; download it from =TODO=
+   Using a pre-built image is suggested; download it from
+   http://139.162.161.39/thesis/images/pos-sim-core-latest.tar.gz
+   (to check the sha sums see section [[sec:sha]].)
+
    The compressed image is about 1 GB.
 
    once downloaded load it to the docker engine with
@@ -805,7 +808,9 @@ TZ=Europe/Amsterdam
   later when you run the script. If you create other data folders you can control
   which is used by ediding the first cell of =analyze.Rmd= where *data.folder* is defined.
 
-  *Download the image from (TODO link to download and sha sum)*
+  Download the image from
+  http://139.162.161.39/thesis/images/pos-sim-r-latest.tar.gz
+  (to check the sha sums see section [[sec:sha]].)
 
   Load the image to the docker engine:
 
@@ -843,7 +848,6 @@ TZ=Europe/Amsterdam
   #+begin_src  text
 PROJECT_ROOT
 .
-|-- .base-image
 |-- compose
 |   |-- data
 |   |   `-- .gitgignore
@@ -859,22 +863,22 @@ PROJECT_ROOT
 |   `-- _static
 |-- .gitignore
 |-- Makefile
+|-- pipinstalls.txt
 |-- pos-sim-r
 |   |-- data
 |   |   |-- analyze.html
 |   |   |-- analyze.Rmd
 |   |   |-- exp_data
-|   |   |   |-- exp_const_geom.csv
 |   |   |   `-- .gitkeep
 |   |   |-- figure
-|   |   |   `-- .gitkeep
+|   |   |   |-- .gitkeep
+|   |   |   `-- score_contour.jpg
 |   |   |-- makefile
 |   |   `-- make.r
 |   |-- defaults.env
 |   |-- docker.build.sh
 |   |-- docker-compose.yml
 |   |-- Dockerfile
-|   |-- docker.launch.sh
 |   `-- install_deps.r
 |-- README.html
 |-- README.md
@@ -949,6 +953,9 @@ PROJECT_ROOT
 |       |-- .gitignore
 |       `-- README.txt
 `-- todo.org
+
+20 directories, 86 files
+
 #+end_src
 
 ** Locs
@@ -1000,6 +1007,9 @@ PROJECT_ROOT
 |-----------------------------+-------+-------+-------+---------+------|
 
 * Images sha256sum
+<<sec:sha>>
 
-dd9d564c2b26b3df8d105235d0ae4f2fe98d45d52620021b5a7d08617b730cd78  pos-sim-r-latest.tar.gz
+run ~$ sha256sum /path/to/file.tar.gz~
+
 dbe608295d63480a21421f24b7582dea8f70613b383d783e46b0d7683e675ca  pos-sim-core-latest.tar.gz
+d9d564c2b26b3df8d105235d0ae4f2fe98d45d52620021b5a7d08617b730cd78 pos-sim-r-latest.tar.gz
