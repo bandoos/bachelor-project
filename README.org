@@ -16,8 +16,8 @@
     It should also work on OSX (mac) if a python (>3) and
     pip are installed.
 
-   Clone the repo (TODO) of the project to
-   a location we will refer to as =$PROJECT_ROOT=
+   Clone the repo (https://github.com/bandoos/bachelor-project) of the
+   project to a location we will refer to as =$PROJECT_ROOT=
 
     The alternative is using the provided Docker images,
     which will work on GNU/linux, OSX and windows. See the

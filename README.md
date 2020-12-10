@@ -1,36 +1,36 @@
 
 # Table of Contents
 
-1.  [Intro](#org273f6ab)
-2.  [Standard mode](#org36528e1)
-    1.  [Installation](#org3c3a83c)
-    2.  [Usage](#org4a724bd)
-    3.  [Test the installation](#orgca5cdb1)
-        1.  [NOTE](#org89f07e4)
-    4.  [Using as library](#orgc884cb8)
-        1.  [Simple experiment](#org1b5d6c9)
-    5.  [Experiment definition grammar](#org9923ead)
-    6.  [Experiment definition convention](#orgc62021b)
-3.  [Docker mode](#orgff13ada)
-    1.  [Ensuring docker installation](#orgd201422)
-    2.  [Installing the project's image](#org887a8fe)
-    3.  [Start a session](#org1c6af7d)
-4.  [Multiprocess distributed execution](#org11dae57)
-    1.  [Coordination](#orgce48f3d)
-    2.  [Workers](#org41ce603)
-    3.  [Launcher](#orgd87ce52)
-    4.  [Retrieving results](#org16724ae)
-    5.  [Configuring the distributed system](#orga3c13c3)
-        1.  [Config doctor](#org955e0b1)
-    6.  [Monitoring the distributed system](#org40c4d81)
-5.  [Results analysis](#orgcdb6264)
-6.  [Project structure](#orgec48e84)
-    1.  [Locs](#orgba6e140)
-7.  [Images sha256sum](#orgbe23fe4)
+1.  [Intro](#org2145a5f)
+2.  [Standard mode](#org9f5cdd2)
+    1.  [Installation](#org2e82417)
+    2.  [Usage](#orga48a2d7)
+    3.  [Test the installation](#org95a6f59)
+        1.  [NOTE](#org8f35991)
+    4.  [Using as library](#org953adc1)
+        1.  [Simple experiment](#org186ec45)
+    5.  [Experiment definition grammar](#orgd424132)
+    6.  [Experiment definition convention](#org4d5d09f)
+3.  [Docker mode](#org030ebbe)
+    1.  [Ensuring docker installation](#orgf183aab)
+    2.  [Installing the project's image](#orgdb8501f)
+    3.  [Start a session](#orga6a9a9b)
+4.  [Multiprocess distributed execution](#orgf951ed2)
+    1.  [Coordination](#orgd672eb5)
+    2.  [Workers](#org6e46a86)
+    3.  [Launcher](#org4ad8e9a)
+    4.  [Retrieving results](#org9f42516)
+    5.  [Configuring the distributed system](#org306716a)
+        1.  [Config doctor](#org012a15e)
+    6.  [Monitoring the distributed system](#orgcbb365b)
+5.  [Results analysis](#orge74d9f0)
+6.  [Project structure](#org4086ac3)
+    1.  [Locs](#org5a7dbed)
+7.  [Images sha256sum](#org949b5b3)
 
 
 
-<a id="org273f6ab"></a>
+<a id="org2145a5f"></a>
 
 # Intro
 
@@ -41,12 +41,12 @@ It gives hands on instruction to use the library and reproduce the experiments.
 For documentation of the actual code see <http://139.162.161.39/thesis/build/html/index.html>.
 
 
-<a id="org36528e1"></a>
+<a id="org9f5cdd2"></a>
 
 # Standard mode
 
 
-<a id="org3c3a83c"></a>
+<a id="org2e82417"></a>
 
 ## Installation
 
@@ -54,8 +54,8 @@ This section applies for GNU/linux systems.
 It should also work on OSX (mac) if a python (>3) and
 pip are installed.
 
-Download the .zip folder of the project to a location
-we will refer to as `$PROJECT_ROOT`
+Clone the repo (<https://github.com/bandoos/bachelor-project>) of the
+project to a location we will refer to as `$PROJECT_ROOT`
 
 The alternative is using the provided Docker images,
 which will work on GNU/linux, OSX and windows. See the
@@ -120,7 +120,7 @@ In that case remember that you should always be in `$PROJECT_ROOT`
 and substitute `sim-stake` with `python -m sim.core.main` in the following sections.
 
 
-<a id="org4a724bd"></a>
+<a id="orga48a2d7"></a>
 
 ## Usage
 
@@ -155,7 +155,7 @@ anyways (which manages experiment ids independently)
 so it may be removed in subsequent releases.
 
 
-<a id="orgca5cdb1"></a>
+<a id="org95a6f59"></a>
 
 ## Test the installation
 
@@ -196,21 +196,21 @@ Use output redirection to save the results to a file for later inspection:
 `$ sim-stake --m 3 --T 200 --c 0.5 --stake_f eq --sim random --times 10 > some_name.csv`
 
 
-<a id="org89f07e4"></a>
+<a id="org8f35991"></a>
 
 ### NOTE
 
 Running the simulation as saw above works for simple tests
 with a single parameters combination.
 For a full fledged experiment with parameter manipulation see either
-section [2.4](#org9b64351) (using as library) or section [3](#orgebae96e) (docker mode).
+section [2.4](#org0ebfd4a) (using as library) or section [3](#org85c2bd3) (docker mode).
 
 
-<a id="orgc884cb8"></a>
+<a id="org953adc1"></a>
 
 ## Using as library
 
-<a id="org9b64351"></a>
+<a id="org0ebfd4a"></a>
 
 Once installed the code can also be used as library.
 In the module **sim.core.main** exposes a `run` function
@@ -243,7 +243,7 @@ The `header` boolean controls whether the header of the csv should be produced
 before the first run results.
 
 
-<a id="org1b5d6c9"></a>
+<a id="org186ec45"></a>
 
 ### Simple experiment
 
@@ -275,7 +275,7 @@ on the first parameter combination so we get a valid csv
 as output.
 
 
-<a id="org9923ead"></a>
+<a id="orgd424132"></a>
 
 ## Experiment definition grammar
 
@@ -395,11 +395,11 @@ which is why the software is meant to be run in a distributed multiprocess
 fashion thanks to celery <https://github.com/celery/celery>.
 
 
-<a id="orgc62021b"></a>
+<a id="org4d5d09f"></a>
 
 ## Experiment definition convention
 
-<a id="org21a8ad3"></a>
+<a id="orga8abe95"></a>
 We adopt the following convention to define experiments:
 
 create a python file in `$PROJECT_ROOT/executor/experiments/`
@@ -415,14 +415,14 @@ is present.
 The main experiment presented in the paper is located in module
 `sim.executor.experiments.exp_0`.
 
-This convention will be important later on in section [4.3](#org0497aa7).
+This convention will be important later on in section [4.3](#orge486ee9).
 
 
-<a id="orgff13ada"></a>
+<a id="org030ebbe"></a>
 
 # Docker mode
 
-<a id="orgebae96e"></a>
+<a id="org85c2bd3"></a>
 
 If not already present on your system install docker:
 <https://docs.docker.com/get-docker/>
@@ -443,7 +443,7 @@ On linux you will have to install it separately:
 It quiet intuitively allows to compose docker images/containers.
 
 
-<a id="orgd201422"></a>
+<a id="orgf183aab"></a>
 
 ## Ensuring docker installation
 
@@ -455,7 +455,7 @@ This can take a while the first time, but it should
 then produce some useful information about docker and exit.
 
 
-<a id="org887a8fe"></a>
+<a id="orgdb8501f"></a>
 
 ## Installing the project's image
 
@@ -465,7 +465,10 @@ the necessary requirements installed plus some
 packages and tweaks to make the experience pleasant
 like tab-completion on the project's commands.
 
-Using a pre-built image is suggested; download it from `TODO`
+Using a pre-built image is suggested; download it from
+<http://139.162.161.39/thesis/images/pos-sim-core-latest.tar.gz>
+(to check the sha sums see section [7](#orgc6548ca).)
+
 The compressed image is about 1 GB.
 
 once downloaded load it to the docker engine with
@@ -473,7 +476,7 @@ once downloaded load it to the docker engine with
 `$ docker load < pos-sim-core-latest.tar.gz`
 
 \*\* Launch the system
-  <a id="org611cc9d"></a>
+  <a id="orgf89f437"></a>
   Once the image is successfully loaded enter
   the `$PROJECT_ROOT/compose` folder and run:
 
@@ -493,11 +496,11 @@ can run, that is more than sufficient to run many simulations
 in parallel within the container though!
 
 
-<a id="org1c6af7d"></a>
+<a id="orga6a9a9b"></a>
 
 ## Start a session
 
-<a id="org9ba31c0"></a>
+<a id="orgb7c43d2"></a>
 You can start a terminal session within the running system
 (from another terminal) with
 
@@ -512,7 +515,7 @@ so they can be called directly. If in doubt you can list them
 with `$ ls ~/.scripts`
 
 
-<a id="org11dae57"></a>
+<a id="orgf951ed2"></a>
 
 # Multiprocess distributed execution
 
@@ -536,7 +539,7 @@ to carry out the experiments as utilities are provided
 for the necessary interactions.
 
 
-<a id="orgce48f3d"></a>
+<a id="orgd672eb5"></a>
 
 ## Coordination
 
@@ -550,7 +553,7 @@ Note that this uses the official redis and mongodb images
 so no `docker load` is needed in this case.
 
 This will start the database and redis instances
-on predefined ports (see section [4.5](#org1995340) if you want to
+on predefined ports (see section [4.5](#org8728285) if you want to
 change the port numbers for any reason.)
 
 the above command will hang until CTRL-C is pressed
@@ -575,16 +578,16 @@ No further actions need to be taken with regard to the coordination
 system.
 
 
-<a id="org41ce603"></a>
+<a id="org6e46a86"></a>
 
 ## Workers
 
 On each machine that should be targeted by the job
-distribution mechanism follow sections [3.2](#org611cc9d) and [3.3](#org9ba31c0)
+distribution mechanism follow sections [3.2](#orgf89f437) and [3.3](#orgb7c43d2)
 to boot the worker environment.
 
 Once you have a session terminal ensure that the system configuration
-is correct for your needs (see section [4.5](#org1995340)), and then
+is correct for your needs (see section [4.5](#org8728285)), and then
 simply run:
 
 `$ run-worker`
@@ -594,11 +597,11 @@ you hit CTRL-C, and will print information about the system and then log
 events.
 
 
-<a id="orgd87ce52"></a>
+<a id="org4ad8e9a"></a>
 
 ## Launcher
 
-<a id="org0497aa7"></a>
+<a id="orge486ee9"></a>
 
 A launcher is provided in the module `sim.executor.launcher`
 which is linked in `.scripts/sim-launcher` for convenience.
@@ -608,7 +611,7 @@ a running (and correctly configured) instance of the project's
 docker image.
 Another option is launching from a machine (e.g. a laptop)
 that will not have a worker running so long as it is properly configured
-to contact the distributed system coordinator (see section [4.5](#org1995340)).
+to contact the distributed system coordinator (see section [4.5](#org8728285)).
 
 it synopsis is as follows:
 
@@ -626,13 +629,13 @@ The value provided for the experiment module should be a
 fully qualified python module name such as `sim.executor.experiments.exp_0`
 just like in an **import** statement, pointing to a module in the `$PYTHONPATH`.
 The `batch` variable within that module will be looked up according to
-the convention presented in section [2.6](#org21a8ad3).
+the convention presented in section [2.6](#orga8abe95).
 
 If `--async` is not provided then the launcher will block
 until the experiment completes. If `--async` is provided
 then the launcher will exit as soon as the dispatching
 completes, you can then monitor the progress as explained in
-section [4.6](#orgff156f4)
+section [4.6](#orgc690a3c)
 
 Once an experiment is successfully launched the coordinator
 will distribute the necessary jobs to complete the experiment
@@ -641,15 +644,15 @@ to the available workers.
 The launcher program outputs some information about the
 dispatched experiment. In particular it outputs a python dictionary
 whose `batch_uuid` key is what we are interested in for fetching
-results later on as explained in section [4.4](#orgd139ab5).
+results later on as explained in section [4.4](#org5335f87).
 (If the `--async` flag is on the look for `_batch_uuid`)
 
 
-<a id="org16724ae"></a>
+<a id="org9f42516"></a>
 
 ## Retrieving results
 
-<a id="orgd139ab5"></a>
+<a id="org5335f87"></a>
 
 In distributed mode the database is used to store results
 as they are produced.
@@ -693,11 +696,11 @@ the docker and your host system).
 substitute `batch_uuid`, `destination` and `name` appropriately.
 
 
-<a id="orga3c13c3"></a>
+<a id="org306716a"></a>
 
 ## Configuring the distributed system
 
-<a id="org1995340"></a>
+<a id="org8728285"></a>
 
 The distributed system is configured via the following environment
 variables:
@@ -768,22 +771,22 @@ The default .env file is located at `$PROJECT_ROOT/compose/defaults.env`.
 
 Please note that you have to source your (or the default) .env file
 for each session! In each session use the config doctor from
-section [4.5.1](#orgb504959) to ensure the system is configured correctly.
+section [4.5.1](#org0f1a8ab) to ensure the system is configured correctly.
 
 NOTE: To streamline configuration you can edit
 `$PROJECT_ROOT/compose/defaults.env` before distributing the
 project to your machines, the variables in this file will be loaded
 automatically when you start a pos-sim-core docker by following
-instruction in section [3.2](#org611cc9d). If you then still need to change
+instruction in section [3.2](#orgf89f437). If you then still need to change
 them at runtime you will have to soruce the file from inside the
 container again as explained above.
 
 
-<a id="org955e0b1"></a>
+<a id="org012a15e"></a>
 
 ### Config doctor
 
-<a id="orgb504959"></a>
+<a id="org0f1a8ab"></a>
 
 Another utility is provided at which will validate the configuration and verify that the
 coordination services are reachable.
@@ -795,11 +798,11 @@ You can invoke the `config-doctor` by running:
 `$ python -m sim.executor.config-doctor`
 
 
-<a id="org40c4d81"></a>
+<a id="orgcbb365b"></a>
 
 ## Monitoring the distributed system
 
-<a id="orgff156f4"></a>
+<a id="orgc690a3c"></a>
 
 The status of the distributed system can be monitored with a web-ui
 provided by `flower` (<https://flower.readthedocs.io/en/latest/>).
@@ -825,7 +828,7 @@ Note that the graphs are not retroactive so keep a tab
 open on the graph page and do not reload.
 
 
-<a id="orgcdb6264"></a>
+<a id="orge74d9f0"></a>
 
 # Results analysis
 
@@ -862,7 +865,9 @@ directory so be careful to only have the files you desire in there
 later when you run the script. If you create other data folders you can control
 which is used by ediding the first cell of `analyze.Rmd` where **data.folder** is defined.
 
-**Download the image from (TODO link to download and sha sum)**
+Download the image from
+<http://139.162.161.39/thesis/images/pos-sim-r-latest.tar.gz>
+(to check the sha sums see section [7](#orgc6548ca).)
 
 Load the image to the docker engine:
 
@@ -895,7 +900,7 @@ The main experiment discussed in the project's paper is at: <http://139.162.161.
 Yours will be available locally: at <http://localhost:8787/files/projects/analyze.html>
 
 
-<a id="orgec48e84"></a>
+<a id="org4086ac3"></a>
 
 # Project structure
 
@@ -1010,7 +1015,7 @@ Yours will be available locally: at <http://localhost:8787/files/projects/analyz
     20 directories, 86 files
 
 
-<a id="orgba6e140"></a>
+<a id="org5a7dbed"></a>
 
 ## Locs
 
@@ -1463,9 +1468,13 @@ Yours will be available locally: at <http://localhost:8787/files/projects/analyz
 </table>
 
 
-<a id="orgbe23fe4"></a>
+<a id="org949b5b3"></a>
 
 # Images sha256sum
 
-dd9d564c2b26b3df8d105235d0ae4f2fe98d45d52620021b5a7d08617b730cd78  pos-sim-r-latest.tar.gz
+<a id="orgc6548ca"></a>
+
+run `$ sha256sum /path/to/file.tar.gz`
+
 dbe608295d63480a21421f24b7582dea8f70613b383d783e46b0d7683e675ca  pos-sim-core-latest.tar.gz
+d9d564c2b26b3df8d105235d0ae4f2fe98d45d52620021b5a7d08617b730cd78 pos-sim-r-latest.tar.gz
