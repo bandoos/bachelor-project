@@ -38,7 +38,7 @@ This document acts as technical appendix for the bachelor project pos-sim-0.1
 
 It gives hands on instruction to use the library and reproduce the experiments.
 
-For documentation of the actual code see <http://139.162.161.39/thesis/build/html/index.html>.
+For documentation of the actual code see <https://139.162.161.39/public/thesis/build/html/index.html>.
 
 
 <a id="org9f5cdd2"></a>
