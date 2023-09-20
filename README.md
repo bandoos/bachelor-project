@@ -370,7 +370,7 @@ A real experiment definition for the simulation could be:
     	   'times':      [REPETITIONS],
     	   'redundancy': range(REDUNDANCY) })
 
-Which will generate \(3*2*8*5*3=720\) unique parameters configurations,
+Which will generate `3*2*8*5*3=720` unique parameters configurations,
 which are replicated `REDUNDANCY` times (thus 1440 runs) each of which
 tests the configuration `REPETITIONS` times (thus 14'400 total simulations).
 
